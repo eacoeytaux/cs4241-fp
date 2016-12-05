@@ -1,12 +1,13 @@
 {
   "name": "lh-4241-simple-node",
   "version": "0.1.0",
-  "description": "WPI CS 4241 Assignment 6",
-  "author": "Ethan Coeytaux",
+  "description": "WPI CS 4241 Final Project",
+  "author": "Ethan Coeytaux and Breanne Happell",
   "private": true,
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
+    "date-time": "^1.1.0"
   }
 }
