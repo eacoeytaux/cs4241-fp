@@ -29,9 +29,9 @@
 
     <div class="tool">
       Tempo:
-      <input type='text' id="searchBox" placeholder="120">
+      <input type='text' id="tempoInput" placeholder="120">
     </div>
-    
+
     <div class="tool">
       Key:
       <select>
@@ -43,7 +43,7 @@
 
     <div class="tool">
      Color: 
-     <input type='color' id="searchBox">
+     <input type='color' id="colorPicker">
    </div>
  </div>
 </div>
@@ -68,7 +68,7 @@ noteArray = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
 
 var height = 16;
 var width = 16;
@@ -91,12 +91,23 @@ window.onload = function() {
 		mouseClick = false;
 	});
 	
-	
-	
-	
+	document.addEventListener("mouseup", function(evt) {
+		mouseClick = false;
+	});
+
+  document.getElementById("colorPicker").addEventListener("change", function() {
+    currColor = document.getElementById("colorPicker").value;
+  })
+
+  document.getElementById("tempoInput").addEventListener("change", function() {
+    beatsPerMin = document.getElementById("tempoInput").value; //TODO error checking
+
+    clearInterval(intervalVar);
+    intervalVar = window.setInterval(highlightCol, beatsPerMin);
+  });
 }
 
-window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
+var intervalVar = window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
 
 
 function loadMatrix() {
@@ -131,20 +142,20 @@ function loadMatrix() {
 	var notes = document.getElementsByClassName("notes");
 	for (var i = 0; i < notes.length; i++) {
 		notes[i].addEventListener("mousedown", function(evt) {
-      
+
 			// set the mouse click boolean to true
 			mouseClick = true;
 			// determine the row and column of the clicked noteArray
-			var temp = evt.srcElement.className.split(':')
+			var temp = evt.target.className.split(':')
 			var row = temp[1].split(' ')[0];
 			var col = temp[2];
 			if(noteArray[row][col] == 0) {
-				evt.srcElement.style.backgroundColor = '#F0F0F0';
+				evt.target.style.backgroundColor = '#F0F0F0';
 				noteArray[row][col] = 1;
 				addColor = true;
 			}
 			else {
-				evt.srcElement.style.backgroundColor = '#494949';
+				evt.target.style.backgroundColor = '#494949';
 				noteArray[row][col] = 0;
 				addColor = false;
 			}
@@ -155,28 +166,29 @@ function loadMatrix() {
 	// handle mouse drag events
 	for (var i = 0; i < notes.length; i++) {
 		notes[i].addEventListener("mouseover", function(evt) {
-      
+
 			// change the note color if a mouse click has already occured
 			if(mouseClick) {
-        
+
 				// determine the row and column of the clicked noteArray
-				var temp = evt.srcElement.className.split(':')
+				var temp = evt.target.className.split(':')
 				var row = temp[1].split(' ')[0];
 				var col = temp[2];
 				if(addColor) {
-					evt.srcElement.style.backgroundColor = '#F0F0F0';
+					evt.target.style.backgroundColor = '#F0F0F0';
 					noteArray[row][col] = 1;
 				}
 				else {
-					evt.srcElement.style.backgroundColor = '#494949';
+					evt.target.style.backgroundColor = '#494949';
 					noteArray[row][col] = 0;
 				}
 			}
 		});
 	}
 }
+	
 
-// highlights all notes in the current column
+
 function highlightCol() {
 
 	// Make any active cells white again
