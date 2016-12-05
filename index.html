@@ -10,7 +10,7 @@
   <body>
     <div class="header">
 		<img src="images/trex.png" alt="T-Rex Logo">
-    	<h1 id="mainHeading">MaTrex</h1>
+    	<h1 id="mainHeading">maTRex</h1>
     </div>
 	
 	<div class="content">
@@ -68,10 +68,14 @@ noteArray = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 			
 var height = 16;
 var width = 16;
+var currCol = 0;
 
 
 // Add event listeners to notes
 window.onload = function() {
+
+	loadMatrix();
+
 	var notes = document.getElementsByClassName("notes");
 	for (var i = 0; i < notes.length; i++) {
 		notes[i].addEventListener("click", function(evt) {
@@ -90,11 +94,14 @@ window.onload = function() {
 			}
 		});
 	}
+	
+	
+	
+	
 }
 
+window.setInterval(highlightCol, 1000); // repeat forever, polling every 100 ms
 
-loadMatrix();
-//highlightNotes();
 
 function loadMatrix() {
 
@@ -114,35 +121,24 @@ function loadMatrix() {
 }
 
 
-function highlightNotes() {
-
-	while(1) {
-
-	// highlight each note column by column
-	for(var col = 0; col < width; col++) {
-		
-		// unhighlight the previous row
-		
-		
-		//setTimeout(function(){highlightCol(col)}, 1000);
-
-	}
-	
-	}
-	
-
-}
-
-function highlightCol(col) {
-
+function highlightCol() {
 	// determine which notes are active
+	var el; 
 	for(var row = 0; row < height; row++) {
-		if(noteArray[row][col]) {
-			evt.srcElement.style.backgroundColor = 'red';
-			
+		if(noteArray[row][currCol]) {
+			el = document.getElementById(row+ ':' + currCol)
+			el.style.backgroundColor = 'red';
+			console.log("match")
 		}
 	}
-
+	
+	// increment the currCol variable
+	if(currCol < (width-1)) {
+		currCol += 1;
+	}
+	else {
+		currCol = 0;
+	}
 }
 
 
