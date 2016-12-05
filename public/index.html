@@ -23,30 +23,30 @@
     <div id="tools" class="side-panel">
      <div class="tool">
       Column:
-       <button type='button' id="addCol">+</button>
-       <button type='button' id="removeCol">-</button>
-     </div>
+      <button type='button' id="addCol">+</button>
+      <button type='button' id="removeCol">-</button>
+    </div>
 
-     <div class="tool">
+    <div class="tool">
       Tempo:
-       <input type='text' id="searchBox" placeholder="120">
-     </div>
-     
-     <div class="tool">
+      <input type='text' id="searchBox" placeholder="120">
+    </div>
+    
+    <div class="tool">
       Key:
       <select>
         <option value="" disabled="disabled" selected="selected">Select a key</option>
         <option value="c">C</option>
         <option value="d">D</option>
       </select>
-     </div>
+    </div>
 
-     <div class="tool">
-       Color: 
-       <input type='color' id="searchBox">
-     </div>
+    <div class="tool">
+     Color: 
+     <input type='color' id="searchBox">
    </div>
  </div>
+</div>
 
 </body>
 
@@ -74,6 +74,9 @@ var height = 16;
 var width = 16;
 var currCol = 0;
 var currColor = "red";
+var beatsPerMin = 100;
+var mouseClick = false;
+var addColor = false;
 
 
 // Add event listeners to notes
@@ -83,29 +86,62 @@ window.onload = function() {
 
 	var notes = document.getElementsByClassName("notes");
 	for (var i = 0; i < notes.length; i++) {
-		notes[i].addEventListener("click", function(evt) {
-
+		notes[i].addEventListener("mousedown", function(evt) {
+      
+			// set the mouse click boolean to true
+			mouseClick = true;
 			// determine the row and column of the clicked noteArray
 			var temp = evt.srcElement.className.split(':')
-			var row = temp[1].substring(0,1);
+			var row = temp[1].split(' ')[0];
 			var col = temp[2];
 			if(noteArray[row][col] == 0) {
 				evt.srcElement.style.backgroundColor = '#F0F0F0';
 				noteArray[row][col] = 1;
+				addColor = true;
 			}
 			else {
 				evt.srcElement.style.backgroundColor = '#494949';
 				noteArray[row][col] = 0;
+				addColor = false;
 			}
 		});
 	}
+	
+	
+	// handle mouse drag events
+	for (var i = 0; i < notes.length; i++) {
+		notes[i].addEventListener("mouseover", function(evt) {
+      
+			// change the note color if a mouse click has already occured
+			if(mouseClick) {
+        
+				// determine the row and column of the clicked noteArray
+				var temp = evt.srcElement.className.split(':')
+				var row = temp[1].split(' ')[0];
+				var col = temp[2];
+				if(addColor) {
+					evt.srcElement.style.backgroundColor = '#F0F0F0';
+					noteArray[row][col] = 1;
+				}
+				else {
+					evt.srcElement.style.backgroundColor = '#494949';
+					noteArray[row][col] = 0;
+				}
+			}
+		});
+	}
+	
+	// mouse release event anywhere in the document disables mouse click
+	document.addEventListener("mouseup", function(evt) {
+		mouseClick = false;
+	});
 	
 	
 	
 	
 }
 
-window.setInterval(highlightCol, 100); // repeat forever, polling every 100 ms
+window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
 
 
 function loadMatrix() {
@@ -114,10 +150,10 @@ function loadMatrix() {
 	html = '<center>'
 	
 	// Add the correct number of notes to the matrix
-	for(var row = 0; row < width; row++) {
+	for(var row = 0; row < height; row++) {
 
 		html = html + '<div class="row">';
-		for(var col = 0; col < height; col++) {
+		for(var col = 0; col < width; col++) {
 			html = html + '<div id="' + row + ':' + col +'" class="notes row:' + row + ' col:' + col + '"></div>';
 		}
 		html = html + '</div>';
@@ -134,7 +170,6 @@ function highlightCol() {
 		if(noteArray[row][currCol]) {
 			el = document.getElementById(row+ ':' + currCol)
 			el.style.backgroundColor = '#F0F0F0';
-			console.log("match")
 		}
 	}
 
@@ -151,7 +186,6 @@ function highlightCol() {
 		if(noteArray[row][currCol]) {
 			el = document.getElementById(row+ ':' + currCol)
 			el.style.backgroundColor = currColor;
-			console.log("match")
 		}
 	}
 	
