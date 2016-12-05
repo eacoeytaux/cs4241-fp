@@ -69,6 +69,7 @@ noteArray = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 var height = 16;
 var width = 16;
 var currCol = 0;
+var currColor = "red";
 
 
 // Add event listeners to notes
@@ -100,7 +101,7 @@ window.onload = function() {
 	
 }
 
-window.setInterval(highlightCol, 1000); // repeat forever, polling every 100 ms
+window.setInterval(highlightCol, 100); // repeat forever, polling every 100 ms
 
 
 function loadMatrix() {
@@ -122,16 +123,17 @@ function loadMatrix() {
 
 
 function highlightCol() {
-	// determine which notes are active
+
+	// Make any active cells white again
 	var el; 
 	for(var row = 0; row < height; row++) {
 		if(noteArray[row][currCol]) {
 			el = document.getElementById(row+ ':' + currCol)
-			el.style.backgroundColor = 'red';
+			el.style.backgroundColor = '#F0F0F0';
 			console.log("match")
 		}
 	}
-	
+
 	// increment the currCol variable
 	if(currCol < (width-1)) {
 		currCol += 1;
@@ -139,6 +141,17 @@ function highlightCol() {
 	else {
 		currCol = 0;
 	}
+
+	// determine which notes are active
+	for(var row = 0; row < height; row++) {
+		if(noteArray[row][currCol]) {
+			el = document.getElementById(row+ ':' + currCol)
+			el.style.backgroundColor = currColor;
+			console.log("match")
+		}
+	}
+	
+	
 }
 
 
