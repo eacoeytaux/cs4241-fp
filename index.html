@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>CS4241 Final Project</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Arvo">
+  </head>
+  <body>
+    <div class="header">
+		<img src="images/trex.png" alt="T-Rex Logo">
+    	<h1 id="mainHeading">maTRex</h1>
+    </div>
+	
+	<div class="content">
+
+		<center>
+			<div id="matrix">
+			</div>
+		</center>
+		
+		<div class="container-1">
+			<form onsubmit="return false;">
+			Row: 
+				<input type='text' id="searchBox">
+				<input type='submit' onclick="searchMovie();">
+			</form>
+		</div>
+		
+		<div class="container-1">
+			<form onsubmit="return false;">
+			Time signature: 
+				<input type='text' id="searchBox">
+				<input type='submit' onclick="searchMovie();">
+			</form>
+		</div>
+		
+		<div class="container-1">
+			<form onsubmit="return false;">
+			Color: 
+				<input type='text' id="searchBox">
+				<input type='submit' onclick="searchMovie();">
+			</form>
+		</div>
+		
+  </body>
+
+<script>
+
+// order goes [row][column]
+noteArray = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+			
+var height = 16;
+var width = 16;
+var currCol = 0;
+var currColor = "red";
+
+
+// Add event listeners to notes
+window.onload = function() {
+
+	loadMatrix();
+
+	var notes = document.getElementsByClassName("notes");
+	for (var i = 0; i < notes.length; i++) {
+		notes[i].addEventListener("click", function(evt) {
+		
+			// determine the row and column of the clicked noteArray
+			var temp = evt.srcElement.className.split(':')
+			var row = temp[1].substring(0,1);
+			var col = temp[2];
+			if(noteArray[row][col] == 0) {
+				evt.srcElement.style.backgroundColor = '#F0F0F0';
+				noteArray[row][col] = 1;
+			}
+			else {
+				evt.srcElement.style.backgroundColor = '#494949';
+				noteArray[row][col] = 0;
+			}
+		});
+	}
+	
+	
+	
+	
+}
+
+window.setInterval(highlightCol, 100); // repeat forever, polling every 100 ms
+
+
+function loadMatrix() {
+
+	el = document.getElementById("matrix");
+	html = ""
+	
+	// Add the correct number of notes to the matrix
+	for(var row = 0; row < width; row++) {
+
+		html = html + '<div class="row">';
+		for(var col = 0; col < height; col++) {
+			html = html + '<div id="' + row + ':' + col +'" class="notes row:' + row + ' col:' + col + '"></div>';
+		}
+		html = html + '</div>';
+	}
+	el.innerHTML = html
+}
+
+
+function highlightCol() {
+
+	// Make any active cells white again
+	var el; 
+	for(var row = 0; row < height; row++) {
+		if(noteArray[row][currCol]) {
+			el = document.getElementById(row+ ':' + currCol)
+			el.style.backgroundColor = '#F0F0F0';
+			console.log("match")
+		}
+	}
+
+	// increment the currCol variable
+	if(currCol < (width-1)) {
+		currCol += 1;
+	}
+	else {
+		currCol = 0;
+	}
+
+	// determine which notes are active
+	for(var row = 0; row < height; row++) {
+		if(noteArray[row][currCol]) {
+			el = document.getElementById(row+ ':' + currCol)
+			el.style.backgroundColor = currColor;
+			console.log("match")
+		}
+	}
+	
+	
+}
+
+
+</script>
+
+</html>
