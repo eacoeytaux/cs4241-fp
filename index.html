@@ -49,6 +49,25 @@
 <script>
 
 // order goes [row][column]
+noteArray = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+			
+var height = 16;
+var width = 16;
 
 
 // Add event listeners to notes
@@ -56,18 +75,28 @@ window.onload = function() {
 	var notes = document.getElementsByClassName("notes");
 	for (var i = 0; i < notes.length; i++) {
 		notes[i].addEventListener("click", function(evt) {
-			evt.srcElement.style.backgroundColor='white';
+		
+			// determine the row and column of the clicked noteArray
+			var temp = evt.srcElement.className.split(':')
+			var row = temp[1].substring(0,1);
+			var col = temp[2];
+			if(noteArray[row][col] == 0) {
+				evt.srcElement.style.backgroundColor = '#F0F0F0';
+				noteArray[row][col] = 1;
+			}
+			else {
+				evt.srcElement.style.backgroundColor = '#494949';
+				noteArray[row][col] = 0;
+			}
 		});
 	}
 }
 
 
 loadMatrix();
+//highlightNotes();
 
 function loadMatrix() {
-
-	var height = 16;
-	var width = 16;
 
 	el = document.getElementById("matrix");
 	html = ""
@@ -77,7 +106,7 @@ function loadMatrix() {
 
 		html = html + '<div class="row">';
 		for(var col = 0; col < height; col++) {
-			html = html + '<div id="' + row + ':' + col +'" class="notes row' + row + ' col' + col + '"></div>';
+			html = html + '<div id="' + row + ':' + col +'" class="notes row:' + row + ' col:' + col + '"></div>';
 		}
 		html = html + '</div>';
 	}
@@ -87,7 +116,32 @@ function loadMatrix() {
 
 function highlightNotes() {
 
+	while(1) {
+
+	// highlight each note column by column
+	for(var col = 0; col < width; col++) {
+		
+		// unhighlight the previous row
+		
+		
+		//setTimeout(function(){highlightCol(col)}, 1000);
+
+	}
 	
+	}
+	
+
+}
+
+function highlightCol(col) {
+
+	// determine which notes are active
+	for(var row = 0; row < height; row++) {
+		if(noteArray[row][col]) {
+			evt.srcElement.style.backgroundColor = 'red';
+			
+		}
+	}
 
 }
 
