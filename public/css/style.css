@@ -1,0 +1,41 @@
+
+.body {
+	background-image: url("/images/wall.jpg");
+	font-weight: bold;
+	font-family: 'Shadows Into Light', cursive;
+}
+
+.main-material {
+	background: rgba(255, 255, 255, 0.8);
+	width: 90%;
+	padding-top: 10px;
+	padding-bottom: 40px;
+	padding-right: 30px;
+	padding-left: 30px;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+#door-img {
+	width: 512px;
+}
+
+.italics {
+	font-color: #FF5500;
+}
+
+.ghost {
+	width: 64px;
+}
+
+#ghost-left {
+	visibility: hidden;
+}
+
+#ghost-right {
+	visibility: visible;
+}
+
+h1 {
+	font-size: 72px;
+}
