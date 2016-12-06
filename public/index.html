@@ -9,7 +9,7 @@
 </head>
 <body>
   <div class="header">
-    <img src="images/trex.png" alt="T-Rex Logo">
+    <img id="trexImg" src="images/trex2.png" alt="T-Rex Logo">
     <h1 id="mainHeading">maTRex</h1>
   </div>
 
@@ -17,7 +17,7 @@
 
     <div id="buffer" class="side-panel"></div>
 
-    <div id="matrix">
+    <div id="matrix" draggable=false>
     </div>
 
     <div id="tools" class="side-panel">
@@ -29,7 +29,7 @@
 
     <div class="tool">
       Tempo:
-      <input type='text' id="tempoInput" placeholder="120">
+      <input type='text' id="tempoInput" placeholder="BPM" value="120">
     </div>
 
     <div class="tool">
@@ -105,6 +105,13 @@ window.onload = function() {
     clearInterval(intervalVar);
     intervalVar = window.setInterval(highlightCol, beatsPerMin);
   });
+
+  document.getElementById("trexImg").addEventListener("mouseover", function() {
+    document.getElementById("trexImg").src = "images/trex3.png";
+  });
+  document.getElementById("trexImg").addEventListener("mouseout", function() {
+    document.getElementById("trexImg").src = "images/trex2.png";
+  });
 }
 
 var intervalVar = window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
@@ -118,9 +125,9 @@ function loadMatrix() {
 	// Add the correct number of notes to the matrix
 	for(var row = 0; row < height; row++) {
 
-		html = html + '<div class="row">';
+		html = html + '<div class="row" draggable=false>';
 		for(var col = 0; col < width; col++) {
-			html = html + '<div id="' + row + ':' + col +'" class="notes row:' + row + ' col:' + col + '"></div>';
+			html = html + '<div id="' + row + ':' + col +'" class="notes row:' + row + ' col:' + col + '" draggable=false></div>';
 		}
 		html = html + '</div>';
 	}

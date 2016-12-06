@@ -4,6 +4,12 @@
 	background-color: black;
 	color: white;
   width: 59%;
+  -webkit-user-drag: none;
+-moz-user-select: none;
+user-drag: none; 
+user-select: none;
+-webkit-user-select: none;
+-ms-user-select: none;
 }
 
 .side-panel {
@@ -39,6 +45,12 @@ h1 {
 
 .row {
 	margin: auto;
+  -webkit-user-drag: none;
+-moz-user-select: none;
+user-drag: none; 
+user-select: none;
+-webkit-user-select: none;
+-ms-user-select: none;
 }
 
 .notes {
@@ -56,6 +68,12 @@ h1 {
   margin-bottom: 1px;
   margin-right: 3px;
   margin-left: 3px;
+  -webkit-user-drag: none;
+-moz-user-select: none;
+user-drag: none; 
+user-select: none;
+-webkit-user-select: none;
+-ms-user-select: none;
 }
 
 .container-1{
@@ -86,4 +104,9 @@ h1 {
   color : white;
   font-family: Copperplate, "Copperplate Gothic Light", fantasy;
   text-align: center;
+}
+
+
+#trexImg {
+  width: 20%;
 }
