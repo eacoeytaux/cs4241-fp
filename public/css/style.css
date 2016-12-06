@@ -1,15 +1,16 @@
 
 #matrix {
   display: inline-block;
-	background-color: black;
-	color: white;
+  background-color: black;
+  color: white;
   width: 59%;
   -webkit-user-drag: none;
--moz-user-select: none;
-user-drag: none; 
-user-select: none;
--webkit-user-select: none;
--ms-user-select: none;
+  -moz-user-select: none;
+  user-drag: none; 
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  margin-bottom: 50px;
 }
 
 .side-panel {
@@ -39,18 +40,23 @@ img {
 
 h1 {
 	display:inline-block;
-	margin-right: 250px;
+  margin-top: 0px;
   margin-bottom: 10px;
+}
+
+h3 {
+	font-size: 20pt;
+	font-family: italic;
 }
 
 .row {
 	margin: auto;
   -webkit-user-drag: none;
--moz-user-select: none;
-user-drag: none; 
-user-select: none;
--webkit-user-select: none;
--ms-user-select: none;
+  -moz-user-select: none;
+  user-drag: none; 
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 .notes {
@@ -69,11 +75,11 @@ user-select: none;
   margin-right: 3px;
   margin-left: 3px;
   -webkit-user-drag: none;
--moz-user-select: none;
-user-drag: none; 
-user-select: none;
--webkit-user-select: none;
--ms-user-select: none;
+  -moz-user-select: none;
+  user-drag: none; 
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 .container-1{
@@ -99,13 +105,12 @@ user-select: none;
 	padding-top: 1px;
   padding-right: 60px;
   padding-bottom: 50px;
-  padding-left: 10px;
+  padding-left: 50px;
   font-size: 80px;
   color : white;
   font-family: Copperplate, "Copperplate Gothic Light", fantasy;
   text-align: center;
 }
-
 
 #trexImg {
   width: 20%;

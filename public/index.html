@@ -9,8 +9,9 @@
 </head>
 <body>
   <div class="header">
-    <img id="trexImg" src="images/trex2.png" alt="T-Rex Logo">
-    <h1 id="mainHeading">maTRex</h1>
+    
+    <h1 id="mainHeading"><img id="trexImg" src="images/trex2.png" alt="T-Rex Logo">maTRex</h1>
+    <h3>Just the musical matrix that you are looking for!</h3>
   </div>
 
   <div class="content">
@@ -19,6 +20,7 @@
 
     <div id="matrix" draggable=false>
     </div>
+    <div id="matrix"></div>
 
     <div id="tools" class="side-panel">
      <div class="tool">
@@ -46,6 +48,31 @@
      <input type='color' id="colorPicker">
    </div>
  </div>
+ 
+ <center><div class="tool">
+  Title:
+  <input type='text' id="titleInput">
+</div>
+
+<div class="tool">
+  Author:
+  <input type='text' id="authorInput">
+</div>
+
+<div class="tool">
+  Description:
+  <input type='text' id="descInput">
+</div></center>
+
+<center><div class="tool">
+  <button type='button' id="saveBtn" onClick="save()">Save</button>
+</div></center>
+
+<center><div class="tool">
+  <button type='button' id="deleteBtn" onClick="delete()">Delete</button>
+</div></center>
+
+
 </div>
 
 </body>
@@ -73,7 +100,7 @@ noteArray = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 var height = 16;
 var width = 16;
 var currCol = 0;
-var currColor = "red";
+var currColor = "#C05B73";
 var beatsPerMin = 100;
 var mouseClick = false;
 var addColor = false;
@@ -84,21 +111,17 @@ window.onload = function() {
 
 	loadMatrix();
 
-	
-	
 	// mouse release event anywhere in the document disables mouse click
 	document.addEventListener("mouseup", function(evt) {
 		mouseClick = false;
 	});
-	
-	document.addEventListener("mouseup", function(evt) {
-		mouseClick = false;
-	});
 
+	// color picker event listener
   document.getElementById("colorPicker").addEventListener("change", function() {
     currColor = document.getElementById("colorPicker").value;
   })
 
+	// tempo input event listener
   document.getElementById("tempoInput").addEventListener("change", function() {
     beatsPerMin = document.getElementById("tempoInput").value; //TODO error checking
 
@@ -112,6 +135,24 @@ window.onload = function() {
   document.getElementById("trexImg").addEventListener("mouseout", function() {
     document.getElementById("trexImg").src = "images/trex2.png";
   });
+  
+  // title input event listener
+  document.getElementById("titleInput").addEventListener("change", function() {
+	// save the matrix title
+	console.log("new title");
+});
+  
+  // author input event listener
+  document.getElementById("authorInput").addEventListener("change", function() {
+	// save the matrix author
+	console.log("new author");
+});
+  
+  // description input event listener
+  document.getElementById("descInput").addEventListener("change", function() {
+	// save the matrix description
+	console.log("new description");
+});
 }
 
 var intervalVar = window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
@@ -193,8 +234,6 @@ function loadMatrix() {
 		});
 	}
 }
-	
-
 
 function highlightCol() {
 
@@ -237,6 +276,30 @@ function removeCol() {
 	}
 	loadMatrix();
 }
+
+// function to handle saving of the current matrix
+function save() {
+	console.log("save")
+	
+	loadHome();
+}
+
+// function to handle quitting the current matrix
+function quit() {
+	
+	loadHome();
+}
+
+// loads the home page
+function loadHome() {
+
+	html = "<h3>Great Feed of all of the other matrixes (is this the plural of matrix?)</h3>"
+	console.log(html);
+	
+	document.getElementsByClassName("content")[0].innerHTML = html;
+
+}
+
 
 
 </script>
