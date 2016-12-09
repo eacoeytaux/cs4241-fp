@@ -27,6 +27,12 @@ var server = http.createServer (function (req, res) {
       case '/js/scripts.js':
         sendFile(res, 'public/js/scripts.js', 'text/javascript');
         break;
+      case '/images/trex2.png':
+        sendFile(res, 'public/images/trex2.png');
+        break;
+      case '/images/trex3.png':
+        sendFile(res, 'public/images/trex3.png');
+        break;
       case 'README.md':
       case '/README':
         sendFile(res, 'README.md');
