@@ -122,11 +122,18 @@ h3 {
   padding: 10px;
   border: none;
   border-bottom: solid 2px #c9c9c9;
-  transition: border 0.3s;
   background-color: black;
   color: white;
 }
-.tool input[type="text"]:focus,
-.tool input[type="text"].focus {
-  border-bottom: solid 2px #969696;
+
+button {
+  color: #fff;
+  background-color: #494949;
+  border: 2px solid gray;
+  border-radius: 2px;
+  padding: 2px;
+  padding-left: 6px;
+  padding-right: 6px;
+  margin: 2px;
 }
+
