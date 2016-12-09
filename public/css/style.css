@@ -19,11 +19,6 @@
   vertical-align: top;
 }
 
-.tool {
-  padding: 10px;
-  color: white;
-}
-
 .content {
   margin-bottom: 40px;
 }
@@ -47,6 +42,7 @@ h1 {
 h3 {
 	font-size: 20pt;
 	font-family: italic;
+  color: white;
 }
 
 .row {
@@ -114,4 +110,23 @@ h3 {
 
 #trexImg {
   width: 20%;
+}
+
+.tool {
+  padding: 10px;
+  color: white;
+  background-color: black;
+}
+
+.tool input[type="text"] {
+  padding: 10px;
+  border: none;
+  border-bottom: solid 2px #c9c9c9;
+  transition: border 0.3s;
+  background-color: black;
+  color: white;
+}
+.tool input[type="text"]:focus,
+.tool input[type="text"].focus {
+  border-bottom: solid 2px #969696;
 }

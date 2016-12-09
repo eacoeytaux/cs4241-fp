@@ -39,18 +39,20 @@
 
 		<div id="tools" class="side-panel">
 			<div class="tool">
-				Column:
-				<button type='button' id="addCol" onClick="addCol()">+</button>
-				<button type='button' id="removeCol" onClick="removeCol()">-</button>
+				<button type='button' id="addCol" onClick="addCol()">Add Column</button>
+				<button type='button' id="removeCol" onClick="removeCol()">Remove Column</button>
 			</div>
 
 			<div class="tool">
-				Tempo:
+				<button type='button' id="addRow" onClick="addRow()">Add Row</button>
+				<button type='button' id="removeRow" onClick="removeRow()">Remove Row</button>
+			</div>
+
+			<div class="tool">
 				<input type='text' id="tempoInput" placeholder="BPM" value="120">
 			</div>
 
 			<div class="tool">
-				Key:
 				<select>
 					<option value="" disabled="disabled" selected="selected">Select a key</option>
 					<option value="c">C</option>
@@ -59,24 +61,20 @@
 			</div>
 
 			<div class="tool">
-				Color: 
 				<input type='color' id="colorPicker">
 			</div>
 		</div>
 
 		<center><div class="tool">
-			Title:
-			<input type='text' id="titleInput">
+			<input type='text' id="titleInput" placeholder="title" value="Title">
 		</div>
 
 		<div class="tool">
-			Author:
-			<input type='text' id="authorInput">
+			<input type='text' id="authorInput" placeholder="artist" value="Artist">
 		</div>
 
 		<div class="tool">
-			Description:
-			<input type='text' id="descInput">
+			<input type='text' id="descInput" placeholder="desc" value="Description">
 		</div></center>
 
 		<center><div class="tool">
@@ -289,17 +287,52 @@ function highlightCol() {
 
 // add a column to the matrix
 function addCol() {
-	width += 1;
-	loadMatrix();
+
+	if(width < 16) {
+		for(var row = 0; row < height; row++) {
+			noteArray[row].push(0)
+		}
+		width += 1;
+		loadMatrix();
+	}
 }
 
 // remove a column from the matrix
 function removeCol() {
+
 	if(width > 0) {
+		for(var row = 0; row < height; row++) {
+			noteArray[row].splice(noteArray[row].length-1,noteArray[row].length)
+		}
 		width -= 1;
+		loadMatrix();
 	}
-	loadMatrix();
 }
+
+// add a row to the matrix
+function addRow() {
+
+	if(height < 16) {
+		var newRow = []
+		for(var col = 0; col < width; col++) {
+			newRow.push(0);
+		}
+		noteArray.splice(0,0,newRow);
+		height += 1;
+		loadMatrix();
+	}
+}
+
+// remove a row from the matrix
+function removeRow() {
+	
+	if(height > 0) {
+		noteArray.splice(0,1)
+		height -= 1;
+		loadMatrix();
+	}
+}
+
 
 // function to handle saving of the current matrix
 function save() {
