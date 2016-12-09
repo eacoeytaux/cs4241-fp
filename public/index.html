@@ -278,46 +278,50 @@ function highlightCol() {
 // add a column to the matrix
 function addCol() {
 
-	for(var row = 0; row < height; row++) {
-		noteArray[row].push(0)
+	if(width < 16) {
+		for(var row = 0; row < height; row++) {
+			noteArray[row].push(0)
+		}
+		width += 1;
+		loadMatrix();
 	}
-	width += 1;
-	loadMatrix();
 }
 
 // remove a column from the matrix
 function removeCol() {
-	
-	for(var row = 0; row < height; row++) {
-		noteArray[row].splice(noteArray[row].length-1,noteArray[row].length)
-	}
+
 	if(width > 0) {
+		for(var row = 0; row < height; row++) {
+			noteArray[row].splice(noteArray[row].length-1,noteArray[row].length)
+		}
 		width -= 1;
+		loadMatrix();
 	}
-	loadMatrix();
 }
 
 // add a row to the matrix
 function addRow() {
 
-	var newRow = []
-	for(var col = 0; col < width; col++) {
-		newRow.push(0);
+	if(height < 16) {
+		var newRow = []
+		for(var col = 0; col < width; col++) {
+			newRow.push(0);
+		}
+		console.log(newRow.join())
+		noteArray.splice(0,0,newRow);
+		height += 1;
+		loadMatrix();
 	}
-	console.log(newRow.join())
-	noteArray.splice(0,0,newRow);
-	height += 1;
-	loadMatrix();
 }
 
 // remove a row from the matrix
 function removeRow() {
 	
-	noteArray.splice(0,1)
 	if(height > 0) {
+		noteArray.splice(0,1)
 		height -= 1;
+		loadMatrix();
 	}
-	loadMatrix();
 }
 
 
