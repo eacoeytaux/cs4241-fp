@@ -6,6 +6,7 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="css/style.css"/>
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Arvo">
+	<link href="https://fonts.googleapis.com/css?family=Dosis" rel="stylesheet"> 
 
 
 <!-- polyfill -
@@ -66,15 +67,15 @@
 		</div>
 
 		<center><div class="tool">
-			<input type='text' id="titleInput" placeholder="title" value="Title">
+			<input type='text' id="titleInput" placeholder="Title">
 		</div>
 
 		<div class="tool">
-			<input type='text' id="authorInput" placeholder="artist" value="Artist">
+			<input type='text' id="authorInput" placeholder="Artist">
 		</div>
 
 		<div class="tool">
-			<input type='text' id="descInput" placeholder="desc" value="Description">
+			<input type='text' id="descInput" placeholder="Description">
 		</div></center>
 
 		<center><div class="tool">
@@ -82,7 +83,7 @@
 		</div></center>
 
 		<center><div class="tool">
-			<button type='button' id="deleteBtn" onClick="delete()">Delete</button>
+			<button type='button' id="deleteBtn" onClick="back()">Back</button>
 		</div></center>
 
 
@@ -349,6 +350,7 @@ function save() {
 	song.color = document.getElementById("colorPicker").value;
 
 	console.log("song data", song);
+	makePost('add-song', JSON.stringify(song));
 	
 	loadHome();
 }
@@ -357,6 +359,14 @@ function save() {
 function quit() {
 	
 	loadHome();
+}
+
+function back() {
+	if (confirm("Just a head's up, you will lose any unsaved progress!") == true) {
+
+    } else {
+
+    }
 }
 
 // loads the home page

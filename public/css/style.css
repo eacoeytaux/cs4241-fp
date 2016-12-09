@@ -24,6 +24,7 @@
 }
 
 body {
+  font-family: 'Dosis', sans-serif;
 	background-color: black;
 }
 
@@ -41,7 +42,6 @@ h1 {
 
 h3 {
 	font-size: 20pt;
-	font-family: italic;
   color: white;
 }
 
@@ -104,7 +104,7 @@ h3 {
   padding-left: 50px;
   font-size: 80px;
   color : white;
-  font-family: Copperplate, "Copperplate Gothic Light", fantasy;
+  /*font-family: Copperplate, "Copperplate Gothic Light", fantasy;*/
   text-align: center;
 }
 
@@ -122,6 +122,8 @@ h3 {
   padding: 10px;
   border: none;
   border-bottom: solid 2px #c9c9c9;
+
+  font-family: 'Dosis', sans-serif;
   transition: border 0.3s;
   background-color: black;
   color: white;
