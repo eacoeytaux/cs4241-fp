@@ -2,78 +2,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>CS4241 Final Project</title>
-  <meta charset="utf-8">
-  <link rel="stylesheet" type="text/css" href="css/style.css"/>
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Arvo">
+	<title>CS4241 Final Project</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="css/style.css"/>
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Arvo">
 </head>
 <body>
-  <div class="header">
-    
-    <h1 id="mainHeading"><img id="trexImg" src="images/trex2.png" alt="T-Rex Logo">maTRex</h1>
-    <h3>Just the musical matrix that you are looking for!</h3>
-  </div>
+	<div class="header">
 
-  <div class="content">
+		<h1 id="mainHeading"><img id="trexImg" src="images/trex2.png" alt="T-Rex Logo">maTRex</h1>
+		<h3>Just the musical matrix that you are looking for!</h3>
+	</div>
 
-    <div id="buffer" class="side-panel"></div>
+	<div class="content">
 
-    <div id="matrix" draggable=false>
-    </div>
-    <div id="matrix"></div>
+		<div id="buffer" class="side-panel"></div>
 
-    <div id="tools" class="side-panel">
-     <div class="tool">
-      Column:
-      <button type='button' id="addCol" onClick="addCol()">+</button>
-      <button type='button' id="removeCol" onClick="removeCol()">-</button>
-    </div>
+		<div id="matrix" draggable=false>
+		</div>
+		<div id="matrix"></div>
 
-    <div class="tool">
-      Tempo:
-      <input type='text' id="tempoInput" placeholder="BPM" value="120">
-    </div>
+		<div id="tools" class="side-panel">
+			<div class="tool">
+				Column:
+				<button type='button' id="addCol" onClick="addCol()">+</button>
+				<button type='button' id="removeCol" onClick="removeCol()">-</button>
+			</div>
 
-    <div class="tool">
-      Key:
-      <select>
-        <option value="" disabled="disabled" selected="selected">Select a key</option>
-        <option value="c">C</option>
-        <option value="d">D</option>
-      </select>
-    </div>
+			<div class="tool">
+				Tempo:
+				<input type='text' id="tempoInput" placeholder="BPM" value="120">
+			</div>
 
-    <div class="tool">
-     Color: 
-     <input type='color' id="colorPicker">
-   </div>
- </div>
- 
- <center><div class="tool">
-  Title:
-  <input type='text' id="titleInput">
-</div>
+			<div class="tool">
+				Key:
+				<select>
+					<option value="" disabled="disabled" selected="selected">Select a key</option>
+					<option value="c">C</option>
+					<option value="d">D</option>
+				</select>
+			</div>
 
-<div class="tool">
-  Author:
-  <input type='text' id="authorInput">
-</div>
+			<div class="tool">
+				Color: 
+				<input type='color' id="colorPicker">
+			</div>
+		</div>
 
-<div class="tool">
-  Description:
-  <input type='text' id="descInput">
-</div></center>
+		<center><div class="tool">
+			Title:
+			<input type='text' id="titleInput">
+		</div>
 
-<center><div class="tool">
-  <button type='button' id="saveBtn" onClick="save()">Save</button>
-</div></center>
+		<div class="tool">
+			Author:
+			<input type='text' id="authorInput">
+		</div>
 
-<center><div class="tool">
-  <button type='button' id="deleteBtn" onClick="delete()">Delete</button>
-</div></center>
+		<div class="tool">
+			Description:
+			<input type='text' id="descInput">
+		</div></center>
+
+		<center><div class="tool">
+			<button type='button' id="saveBtn" onClick="save()">Save</button>
+		</div></center>
+
+		<center><div class="tool">
+			<button type='button' id="deleteBtn" onClick="delete()">Delete</button>
+		</div></center>
 
 
-</div>
+	</div>
 
 </body>
 
@@ -109,6 +109,7 @@ var addColor = false;
 // Add event listeners to notes
 window.onload = function() {
 
+
 	loadMatrix();
 
 	// mouse release event anywhere in the document disables mouse click
@@ -117,25 +118,25 @@ window.onload = function() {
 	});
 
 	// color picker event listener
-  document.getElementById("colorPicker").addEventListener("change", function() {
-    currColor = document.getElementById("colorPicker").value;
-  })
+	document.getElementById("colorPicker").addEventListener("change", function() {
+		currColor = document.getElementById("colorPicker").value;
+	})
 
 	// tempo input event listener
-  document.getElementById("tempoInput").addEventListener("change", function() {
+	document.getElementById("tempoInput").addEventListener("change", function() {
     beatsPerMin = document.getElementById("tempoInput").value; //TODO error checking
 
     clearInterval(intervalVar);
     intervalVar = window.setInterval(highlightCol, beatsPerMin);
-  });
+});
 
-  document.getElementById("trexImg").addEventListener("mouseover", function() {
-    document.getElementById("trexImg").src = "images/trex3.png";
-  });
-  document.getElementById("trexImg").addEventListener("mouseout", function() {
-    document.getElementById("trexImg").src = "images/trex2.png";
-  });
-  
+	document.getElementById("trexImg").addEventListener("mouseover", function() {
+		document.getElementById("trexImg").src = "images/trex3.png";
+	});
+	document.getElementById("trexImg").addEventListener("mouseout", function() {
+		document.getElementById("trexImg").src = "images/trex2.png";
+	});
+
   // title input event listener
   document.getElementById("titleInput").addEventListener("change", function() {
 	// save the matrix title
@@ -157,82 +158,91 @@ window.onload = function() {
 
 var intervalVar = window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
 
-
 function loadMatrix() {
 
-	el = document.getElementById("matrix");
-	html = '<center>'
-	
-	// Add the correct number of notes to the matrix
-	for(var row = 0; row < height; row++) {
+	makeGet('/search-song?', function(data) {
 
-		html = html + '<div class="row" draggable=false>';
-		for(var col = 0; col < width; col++) {
-			html = html + '<div id="' + row + ':' + col +'" class="notes row:' + row + ' col:' + col + '" draggable=false></div>';
+		noteArray = data.songs[0].matrix;
+		height = noteArray[0].length;
+		width = noteArray[0].length;
+
+		console.log(height);
+		console.log(width);
+
+		el = document.getElementById("matrix");
+		html = '<center>';
+
+		// Add the correct number of notes to the matrix
+		for(var row = 0; row < height; row++) {
+
+			html = html + '<div class="row" draggable=false>';
+			for(var col = 0; col < width; col++) {
+				html = html + '<div id="' + row + ':' + col +'" class="notes row:' + row + ' col:' + col + '" draggable=false></div>';
+			}
+			html = html + '</div>';
 		}
-		html = html + '</div>';
-	}
-	el.innerHTML = html + '</center>'
-	
-	
-	for(var row = 0; row < height; row++) {
-		for(var col = 0; col < width; col++) {
-			if(noteArray[row][col] == 1) {
-				document.getElementById(row+ ':' + col).style.backgroundColor = '#F0F0F0';
-			}
-			else {
-				document.getElementById(row+ ':' + col).style.backgroundColor = '#494949';
+		el.innerHTML = html + '</center>';
+		
+		
+		for(var row = 0; row < height; row++) {
+			for(var col = 0; col < width; col++) {
+				if(noteArray[row][col] == 1) {
+					document.getElementById(row+ ':' + col).style.backgroundColor = '#F0F0F0';
+				}
+				else {
+					document.getElementById(row+ ':' + col).style.backgroundColor = '#494949';
+				}
 			}
 		}
-	}
-	
-	
-	var notes = document.getElementsByClassName("notes");
-	for (var i = 0; i < notes.length; i++) {
-		notes[i].addEventListener("mousedown", function(evt) {
+		
+		
+		var notes = document.getElementsByClassName("notes");
+		for (var i = 0; i < notes.length; i++) {
+			notes[i].addEventListener("mousedown", function(evt) {
 
-			// set the mouse click boolean to true
-			mouseClick = true;
-			// determine the row and column of the clicked noteArray
-			var temp = evt.target.className.split(':')
-			var row = temp[1].split(' ')[0];
-			var col = temp[2];
-			if(noteArray[row][col] == 0) {
-				evt.target.style.backgroundColor = '#F0F0F0';
-				noteArray[row][col] = 1;
-				addColor = true;
-			}
-			else {
-				evt.target.style.backgroundColor = '#494949';
-				noteArray[row][col] = 0;
-				addColor = false;
-			}
-		});
-	}
-	
-	
-	// handle mouse drag events
-	for (var i = 0; i < notes.length; i++) {
-		notes[i].addEventListener("mouseover", function(evt) {
-
-			// change the note color if a mouse click has already occured
-			if(mouseClick) {
-
+				// set the mouse click boolean to true
+				mouseClick = true;
 				// determine the row and column of the clicked noteArray
 				var temp = evt.target.className.split(':')
 				var row = temp[1].split(' ')[0];
 				var col = temp[2];
-				if(addColor) {
+				if(noteArray[row][col] == 0) {
 					evt.target.style.backgroundColor = '#F0F0F0';
 					noteArray[row][col] = 1;
+					addColor = true;
 				}
 				else {
 					evt.target.style.backgroundColor = '#494949';
 					noteArray[row][col] = 0;
+					addColor = false;
 				}
-			}
-		});
-	}
+			});
+		}
+		
+		
+		// handle mouse drag events
+		for (var i = 0; i < notes.length; i++) {
+			notes[i].addEventListener("mouseover", function(evt) {
+
+				// change the note color if a mouse click has already occured
+				if(mouseClick) {
+
+					// determine the row and column of the clicked noteArray
+					var temp = evt.target.className.split(':')
+					var row = temp[1].split(' ')[0];
+					var col = temp[2];
+					if(addColor) {
+						evt.target.style.backgroundColor = '#F0F0F0';
+						noteArray[row][col] = 1;
+					}
+					else {
+						evt.target.style.backgroundColor = '#494949';
+						noteArray[row][col] = 0;
+					}
+				}
+			});
+		}
+	});
 }
 
 function highlightCol() {
@@ -279,7 +289,18 @@ function removeCol() {
 
 // function to handle saving of the current matrix
 function save() {
-	console.log("save")
+	console.log("save");
+
+	var song = {};
+
+	song.name = document.getElementById("titleInput").value;
+	song.artist = document.getElementById("authorInput").value;
+	song.matrix = noteArray;
+	song.height = noteArray.length;
+	song.width = noteArray[0].length;
+	song.comment = document.getElementById("descInput").value;
+
+	console.log("song data", song);
 	
 	loadHome();
 }
@@ -300,7 +321,29 @@ function loadHome() {
 
 }
 
+function makeGet(url, cb) {
+	console.log('making GET', url);
+	var req = new XMLHttpRequest();
+	req.onreadystatechange = function() { handleRes(req, cb); }
+	req.open('GET', url);
+	req.send();
+}
 
+function makePost(url, params) {
+	console.log('making POST', url);
+	var req = new XMLHttpRequest();
+	req.onreadystatechange = function() { console.log('POST complete'); }
+	req.open('POST', url);
+	req.send(params);
+}
+
+function handleRes(req, cb) {
+	if (req.readyState !== XMLHttpRequest.DONE) {
+		return;
+	} else if (req.status === 200) {
+		if (cb) cb(JSON.parse(req.responseText));
+	}
+}
 
 </script>
 
