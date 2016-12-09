@@ -85,7 +85,6 @@ function searchSongs(res, uri) {
 
       for (var song in songsList) {
         if (uri.pathname == '/search-song') {
-          console.log(uri.query);
           if (songsList[song]['name'].indexOf(uri.query) > -1) {
             filteredSongs.push(songsList[song])
           }
