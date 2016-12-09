@@ -275,15 +275,27 @@ function highlightCol() {
 
 // add a column to the matrix
 function addCol() {
+
+	for(var row = 0; row < height; row++) {
+		noteArray[row].push(0)
+	}
+
 	width += 1;
 	loadMatrix();
 }
 
 // remove a column from the matrix
 function removeCol() {
+	
+
+	for(var row = 0; row < height; row++) {
+		noteArray[row].remove(-1)
+	}
+
 	if(width > 0) {
 		width -= 1;
 	}
+
 	loadMatrix();
 }
 
