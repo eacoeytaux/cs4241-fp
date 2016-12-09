@@ -110,7 +110,13 @@ var addColor = false;
 window.onload = function() {
 
 
-	loadMatrix();
+	makeGet('/search-song?', function(data) {
+		noteArray = data.songs[0].matrix;
+		height = noteArray.length;
+		width = noteArray[0].length;
+
+		loadMatrix();
+	});
 
 	// mouse release event anywhere in the document disables mouse click
 	document.addEventListener("mouseup", function(evt) {
@@ -158,16 +164,7 @@ window.onload = function() {
 
 var intervalVar = window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
 
-function loadMatrix() {
-
-	makeGet('/search-song?', function(data) {
-
-		noteArray = data.songs[0].matrix;
-		height = noteArray[0].length;
-		width = noteArray[0].length;
-
-		console.log(height);
-		console.log(width);
+function loadMatrix(song) {
 
 		el = document.getElementById("matrix");
 		html = '<center>';
@@ -242,7 +239,6 @@ function loadMatrix() {
 				}
 			});
 		}
-	});
 }
 
 function highlightCol() {
@@ -311,6 +307,7 @@ function save() {
 	song.height = noteArray.length;
 	song.width = noteArray[0].length;
 	song.comment = document.getElementById("descInput").value;
+	song.color = document.getElementById("colorPicker").value;
 
 	console.log("song data", song);
 	
@@ -325,6 +322,9 @@ function quit() {
 
 // loads the home page
 function loadHome() {
+
+
+    clearInterval(intervalVar);
 
 	html = "<h3>Great Feed of all of the other matrixes (is this the plural of matrix?)</h3>"
 	console.log(html);
