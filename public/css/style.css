@@ -132,3 +132,19 @@ h3 {
 .tool input[type="text"].focus {
   border-bottom: solid 2px #969696;
 }
+
+button {
+  font-family: 'Dosis', sans-serif;
+  color: #fff;
+  background-color: #494949;
+  border: 2px solid gray;
+  border-radius: 2px;
+  padding: 2px;
+  padding-left: 6px;
+  padding-right: 6px;
+  margin: 2px;
+}
+
+select {
+  font-family: 'Dosis', sans-serif;
+}
