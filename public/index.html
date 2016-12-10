@@ -58,6 +58,24 @@
 					<option value="" disabled="disabled" selected="selected">Select a key</option>
 					<option value="c">C</option>
 					<option value="d">D</option>
+					<option value="e">E</option>
+					<option value="f">F</option>
+					<option value="g">G</option>
+					<option value="a">A</option>
+					<option value="b">B</option>
+				</select>
+			</div>
+
+			<div class="tool">
+				<select>
+					<option value="" disabled="disabled" selected="selected">Select an Instrument</option>
+					<option value="c">C</option>
+					<option value="d">D</option>
+					<option value="e">E</option>
+					<option value="f">F</option>
+					<option value="g">G</option>
+					<option value="a">A</option>
+					<option value="b">B</option>
 				</select>
 			</div>
 
@@ -94,22 +112,7 @@
 <script>
 
 // order goes [row][column]
-noteArray = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
+var noteArray = [];
 
 var height = 16;
 var width = 16;
@@ -119,12 +122,12 @@ var beatsPerMin = 100;
 var mouseClick = false;
 var addColor = false;
 
+// stores the global list of all songs
+var songList = []
 
 // Add event listeners to notes
 window.onload = function() {
 	
-
-
 	makeGet('/search-song?', function(data) {
 		noteArray = data.songs[0].matrix;
 		height = noteArray.length;
@@ -258,6 +261,17 @@ function loadMatrix(song) {
 		}
 }
 
+function getSongs() {
+	makeGet('/search-song?', function(data) {
+		//noteArray = data.songs[0].matrix;
+		//height = noteArray.length;
+		//width = noteArray[0].length;
+		songList = data.songs;
+		console.log(data);
+	});
+
+}
+
 function highlightCol() {
 
 	// Make any active cells white again
@@ -341,49 +355,71 @@ function save() {
 
 	var song = {};
 
-	song.name = document.getElementById("titleInput").value;
-	song.artist = document.getElementById("authorInput").value;
-	song.matrix = noteArray;
-	song.height = noteArray.length;
-	song.width = noteArray[0].length;
-	song.comment = document.getElementById("descInput").value;
-	song.color = document.getElementById("colorPicker").value;
+	/* Make sure that the song has an artist and title */
+	if((document.getElementById("titleInput").value == "") || (document.getElementById("authorInput").value) == "") {
+		alert("You must add a song title and artist name to save.")
+	}
+	else {
 
-	console.log("song data", song);
-	makePost('add-song', JSON.stringify(song));
-	
-	loadHome();
-}
+		song.name = document.getElementById("titleInput").value;
+		song.artist = document.getElementById("authorInput").value;
+		song.matrix = noteArray;
+		song.height = noteArray.length;
+		song.width = noteArray[0].length;
+		song.comment = document.getElementById("descInput").value;
+		song.color = document.getElementById("colorPicker").value;
 
-// function to handle quitting the current matrix
-function quit() {
-	
-	loadHome();
+		console.log("song data", song);
+		makePost('add-song', JSON.stringify(song));
+		
+		loadHome();
+
+	}
 }
 
 function back() {
 	if (confirm("Just a head's up, you will lose any unsaved progress!") == true) {
-
+		loadHome();
     } else {
 
-    }
+    } 
+}
+
+function refresh() {
+	loadHome();
 }
 
 // loads the home page
 function loadHome() {
 
-
     clearInterval(intervalVar);
 
-	html = "<h3>Great Feed of all of the other matrixes (is this the plural of matrix?)</h3>"
-	console.log(html);
-	
-	document.getElementsByClassName("content")[0].innerHTML = html;
+    /* Get the current song list */
+    makeGet('/search-song?', function(data) {
+		//noteArray = data.songs[0].matrix;
+		//height = noteArray.length;
+		//width = noteArray[0].length;
+		songList = data.songs;
+		console.log(data);
 
+		/* html string to store new html to load */
+	    html = "";
+
+	    for(var song = 0; song < songList.length; song++) {
+
+	    	console.log(songList[song].name);
+	    	html += "<div class='song'>" + songList[song].name + "</br>" + songList[song].artist + "</br>";
+	    	html += songList[song].comment + "</div>"
+	    }
+
+		html += ""
+		html += "<center><div class='tool'><button type='button' id='refreshBtn' onClick='refresh()'>Refresh</button></div></center>"
+		document.getElementsByClassName("content")[0].innerHTML = html;
+
+	});
 }
 
 function makeGet(url, cb) {
-	console.log('making GET', url);
 	var req = new XMLHttpRequest();
 	req.onreadystatechange = function() { handleRes(req, cb); }
 	req.open('GET', url);
@@ -391,7 +427,6 @@ function makeGet(url, cb) {
 }
 
 function makePost(url, params) {
-	console.log('making POST', url);
 	var req = new XMLHttpRequest();
 	req.onreadystatechange = function() { console.log('POST complete'); }
 	req.open('POST', url);

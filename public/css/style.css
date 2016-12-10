@@ -148,3 +148,7 @@ button {
 select {
   font-family: 'Dosis', sans-serif;
 }
+
+.songs {
+  color: white
+}
