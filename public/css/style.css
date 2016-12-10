@@ -24,7 +24,7 @@
 }
 
 body {
-  font-family: 'Dosis', sans-serif;
+  font-family: 'Ubuntu Condensed', sans-serif;
 	background-color: black;
 }
 
@@ -123,7 +123,7 @@ h3 {
   border: none;
   border-bottom: solid 2px #c9c9c9;
 
-  font-family: 'Dosis', sans-serif;
+  font-family: 'Ubuntu Condensed', sans-serif;
   transition: border 0.3s;
   background-color: black;
   color: white;
@@ -134,7 +134,7 @@ h3 {
 }
 
 button {
-  font-family: 'Dosis', sans-serif;
+  font-family: 'Ubuntu Condensed', sans-serif;
   color: #fff;
   background-color: #494949;
   border: 2px solid gray;
@@ -146,5 +146,5 @@ button {
 }
 
 select {
-  font-family: 'Dosis', sans-serif;
+  font-family: 'Ubuntu Condensed', sans-serif;
 }
