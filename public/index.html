@@ -190,6 +190,11 @@
 					<option value="" disabled="disabled" selected="selected">Select a key</option>
 					<option value="c">C</option>
 					<option value="d">D</option>
+					<option value="e">E</option>
+					<option value="f">F</option>
+					<option value="g">G</option>
+					<option value="a">A</option>
+					<option value="b">B</option>
 				</select>
 			</div>
 
@@ -251,6 +256,9 @@ var beatsPerMin = 100;
 var mouseClick = false;
 var addColor = false;
 
+// stores the global list of all songs
+var songList = []
+
 function loadMIDI(instrumentName, cb) {
 	MIDI.loadPlugin({
 	soundfontUrl: "./soundfont/",
@@ -267,6 +275,7 @@ function loadMIDI(instrumentName, cb) {
 
 // Add event listeners to notes
 window.onload = function() {
+
 	loadMIDI("honkytonk_piano", function() {
 
 			makeGet('/search-song?', function(data) {
@@ -406,9 +415,10 @@ function loadMatrix(song) {
 				}
 			});
 		}
-	}
+}
 
-	function highlightCol() {
+
+function highlightCol() {
 
 	// Make any active cells white again
 	var el; 
@@ -502,49 +512,115 @@ function save() {
 
 	var song = {};
 
-	song.name = document.getElementById("titleInput").value;
-	song.artist = document.getElementById("authorInput").value;
-	song.matrix = noteArray;
-	song.height = noteArray.length;
-	song.width = noteArray[0].length;
-	song.comment = document.getElementById("descInput").value;
-	song.color = document.getElementById("colorPicker").value;
+	/* Make sure that the song has an artist and title */
+	if((document.getElementById("titleInput").value == "") || (document.getElementById("authorInput").value) == "") {
+		alert("You must add a song title and artist name to save.")
+	}
+	else {
 
-	console.log("song data", song);
-	makePost('add-song', JSON.stringify(song));
-	
-	loadHome();
-}
+		song.name = document.getElementById("titleInput").value;
+		song.artist = document.getElementById("authorInput").value;
+		song.matrix = noteArray;
+		song.height = noteArray.length;
+		song.width = noteArray[0].length;
+		song.comment = document.getElementById("descInput").value;
+		song.color = document.getElementById("colorPicker").value;
 
-// function to handle quitting the current matrix
-function quit() {
-	
-	loadHome();
+		console.log("song data", song);
+		makePost('add-song', JSON.stringify(song));
+		
+		loadHome();
+
+	}
 }
 
 function back() {
 	if (confirm("Just a head's up, you will lose any unsaved progress!") == true) {
+		loadHome();
+    } else {
+    } 
+}
 
-	} else {
-
-	}
+function refresh() {
+	loadHome();
 }
 
 // loads the home page
 function loadHome() {
 
-
 	clearInterval(intervalVar);
 
-	html = "<h3>Great Feed of all of the other matrixes (is this the plural of matrix?)</h3>"
-	console.log(html);
-	
-	document.getElementsByClassName("content")[0].innerHTML = html;
+    /* Get the current song list */
+    makeGet('/search-song?', function(data) {
+		//noteArray = data.songs[0].matrix;
+		//height = noteArray.length;
+		//width = noteArray[0].length;
+		songList = data.songs;
+		console.log(data);
+
+		/* html string to store new html to load */
+	    html = "";
+
+	    for(var song = 0; song < songList.length; song++) {
+
+	    	console.log(songList[song].name);
+	    	console.log(songList[song].color);
+	    	var colorString;
+	    	if(songList[song].color) {
+	    		console.log("color defined")
+	    	}
+	    	html += "<div class='song'><div class='songMatrix'>"
+
+	    	// only show 8x8 of the matrix if it is larger than 8x8
+	    	var tempHeight = songList[song].height;
+	    	if(tempHeight > 8) {
+	    		tempHeight = 8;
+	    	}
+	    	if(tempWidth > 8) {
+	    		tempWidth = 8;
+	    	}
+	    	var tempWidth = songList[song].width
+
+	    	// Add the correct number of notes to the matrix
+			for(var row = 0; row < tempHeight; row++) {
+
+				html += '<div class="smallRow">';
+				for(var col = 0; col < tempWidth; col++) {
+					// determine if that square is highlighted of not
+					if(songList[song].matrix[row][col]) {
+						colorString = '#F0F0F0';
+					}
+					else {
+						colorString = '#494949';
+					}
+					html += '<div class="smallNote" style="background-color: ' + colorString + ';"></div>';
+				}
+				html += '</div>';
+			}
+
+	    	html += "</div><div class='songInfo'><span class='songTitle'>" + songList[song].name;
+	    	html += "</span></br><span class='songArtist'>";
+	    	html += songList[song].artist + "</span></br></br><span class='songComment'>";
+	    	html += songList[song].comment + "</span>" + "</div><div class='songButton'>";
+	    	html += '<button type="button" id="' + song + '" onClick="likeButton(this.id)">Like</button></div></div><hr>'
+
+	    }
+
+		html += ""
+		html += "<center><div class='tool'><button type='button' id='refreshBtn' onClick='refresh()'>Refresh</button></div></center>"
+		document.getElementsByClassName("content")[0].innerHTML = html;
+
+	});
+}
+
+function likeButton(songID) {
+
+	songList[songID].likes += 1;
+	console.log("add like to song: " + songID);
 
 }
 
 function makeGet(url, cb) {
-	console.log('making GET', url);
 	var req = new XMLHttpRequest();
 	req.onreadystatechange = function() { handleRes(req, cb); }
 	req.open('GET', url);
@@ -552,7 +628,6 @@ function makeGet(url, cb) {
 }
 
 function makePost(url, params) {
-	console.log('making POST', url);
 	var req = new XMLHttpRequest();
 	req.onreadystatechange = function() { console.log('POST complete'); }
 	req.open('POST', url);

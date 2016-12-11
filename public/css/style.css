@@ -148,3 +148,72 @@ button {
 select {
   font-family: 'Ubuntu Condensed', sans-serif;
 }
+
+.song {
+  color: white;
+  padding-bottom: 10px;
+  margin-left: 150px;
+  margin-right: 150px;
+  height: 170px;
+}
+
+.songTitle {
+  font-size: 28px;
+}
+
+.songArtist {
+  font-size: 24px;
+}
+
+.songComment {
+  font-size: 16px;
+}
+
+.songInfo {
+  width: 70%;
+  display: inline-block;
+}
+
+.songButton {
+  width: 10%;
+  display: inline-block;
+}
+
+.songMatrix {
+  width: 20%;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+hr { 
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 150px;
+    margin-right: 150px;
+    border-style: inset;
+    border-width: 1px;
+    color: white;
+} 
+
+
+
+.smallRow {
+
+}
+
+.smallNote {
+  width: 1px;
+  height: 1px;
+  
+  border-radius: 2px;
+  border: 2px solid gray;
+
+  padding: 5px;
+  display:inline-block;
+
+  margin-top: 1px;
+  margin-bottom: 1px;
+  margin-right: 3px;
+  margin-left: 3px;
+}
