@@ -24,7 +24,7 @@
 }
 
 body {
-  font-family: 'Dosis', sans-serif;
+  font-family: 'Ubuntu Condensed', sans-serif;
 	background-color: black;
 }
 
@@ -123,7 +123,7 @@ h3 {
   border: none;
   border-bottom: solid 2px #c9c9c9;
 
-  font-family: 'Dosis', sans-serif;
+  font-family: 'Ubuntu Condensed', sans-serif;
   transition: border 0.3s;
   background-color: black;
   color: white;
@@ -134,7 +134,7 @@ h3 {
 }
 
 button {
-  font-family: 'Dosis', sans-serif;
+  font-family: 'Ubuntu Condensed', sans-serif;
   color: #fff;
   background-color: #494949;
   border: 2px solid gray;
@@ -146,9 +146,46 @@ button {
 }
 
 select {
-  font-family: 'Dosis', sans-serif;
+  font-family: 'Ubuntu Condensed', sans-serif;
 }
 
-.songs {
-  color: white
+.song {
+  color: white;
+  padding-bottom: 10px;
+  margin-left: 200px;
+  margin-right: 200px;
+  height: 100px;
 }
+
+.songTitle {
+  font-size: 28px;
+}
+
+.songArtist {
+  font-size: 24px;
+}
+
+.songComment {
+  font-size: 16px;
+}
+
+.songInfo {
+  width: 90%;
+  display: inline-block;
+}
+
+.songButton {
+  width: 10%;
+  display: inline-block;
+}
+
+hr { 
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 200px;
+    margin-right: 200px;
+    border-style: inset;
+    border-width: 1px;
+    color: white;
+} 

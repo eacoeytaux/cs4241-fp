@@ -12,6 +12,7 @@ var server = http.createServer (function (req, res) {
   if (req.method == 'POST') {
       handlePost(req);
   } else if (req.method == 'GET') {
+    console.log(uri.pathname);
     switch( uri.pathname ) {
       case '/search-song':
       case '/search-artist':
@@ -37,8 +38,45 @@ var server = http.createServer (function (req, res) {
       case '/README':
         sendFile(res, 'README.md');
         break;
+
+      case '/midi/inc/shim/Base64.js':
+        sendFile(res, 'public/midi/inc/shim/Base64.js', 'text/javascript');
+        break;
+      case '/midi/inc/shim/Base64binary.js':
+        sendFile(res, 'public/midi/inc/shim/Base64binary.js', 'text/javascript');
+        break;
+      case '/midi/inc/shim/WebAudioAPI.js':
+        sendFile(res, 'public/midi/inc/shim/WebAudioAPI.js', 'text/javascript');
+        break;
+      case '/midi/js/midi/audioDetect.js':
+        sendFile(res, 'public/midi/js/midi/audioDetect.js', 'text/javascript');
+        break;
+      case '/midi/js/midi/gm.js':
+        sendFile(res, 'public/midi/js/midi/gm.js', 'text/javascript');
+        break;
+      case '/midi/js/midi/loader.js':
+        sendFile(res, 'public/midi/js/midi/loader.js', 'text/javascript');
+        break;
+      case '/midi/js/midi/plugin.audiotag.js':
+        sendFile(res, 'public/midi/js/midi/plugin.audiotag.js');
+        break;
+      case '/midi/js/midi/plugin.webaudio.js':
+        sendFile(res, 'public/midi/js/midi/plugin.webaudio.js');
+        break;
+      case '/midi/js/midi/plugin.webmidi.js':
+        sendFile(res, 'public/midi/js/midi/plugin.webmidi.js');
+        break;
+      case '/midi/js/util/dom_request_xhr.js':
+        sendFile(res, 'public/midi/js/util/dom_request_xhr.js');
+        break;
+      case '/midi/js/util/dom_request_script.js':
+        sendFile(res, 'public/midi/js/util/dom_request_script.js');
+        break;
+
       default:
-        res.end('404 not found');
+        sendFile(res, 'public' + uri.pathname);
+        //console.log('could not find \'' + uri.pathname + '\'');
+        //res.end('404 not found');
     }
   }
 });
