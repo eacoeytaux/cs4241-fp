@@ -6,3 +6,4 @@ TO DO:
 2.) Change the like button to a symbol
 3.) Have the songs on the list load the song copy when clicked
 4.) Write a function to check that a song has to have an original artist/title combo to be saved
+5.) Add sorting/filtering capabilities
