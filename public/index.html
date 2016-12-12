@@ -450,10 +450,10 @@ function highlightCol() {
 	}
 }
 
-var pentatonicScale = [9, 7, 5, 3, 0];
+var pentatonicScale = [0, 3, 5, 8, 10];
 function getNoteVal(col, offset) {
-	var octave = Math.floor(col / 5);
-	var noteVal = pentatonicScale[(col % 5)] - (octave * 12) + offset;
+	var octave = Math.floor(col / 5) + 2;
+	var noteVal = pentatonicScale[(col % 5)] + (octave * 12) + offset;
 	return noteVal;
 }
 
