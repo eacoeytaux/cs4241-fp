@@ -356,7 +356,7 @@ function back() {
 function searchArtist(songID) {
 
 	// get the name of the artist
-	var artistName = '/search-song?' + songList[songID].artist;
+	var artistName = '/search-artist?' + songList[songID].artist;
 	console.log(artistName);
 
 	makeGet(artistName, function(data) {
@@ -364,7 +364,7 @@ function searchArtist(songID) {
 		clearInterval(intervalVar);
 	    /* Get the current song list */
 		songList = data.songs;
-		console.log("data: " + data); 
+		console.log("data: ", data); 
 		loadHomeHTML();
 	});
 }
