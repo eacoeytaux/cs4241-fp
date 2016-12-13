@@ -9,3 +9,5 @@ make better matrixes
 comment code
 write readme
 add bpm, key, and instrument to json
+
+

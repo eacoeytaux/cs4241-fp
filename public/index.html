@@ -89,9 +89,10 @@ window.onload = function() {
 		noteArray = data.songs[0].matrix;
 		height = noteArray.length;
 		width = noteArray[0].length;
-		//beatsPerMin = data.songs[0].bpm;
-		//key = data.songs[0].key;
-		//instrument = data.songs[0].instrument;
+		beatsPerMin = data.songs[0].bpm;
+		key = data.songs[0].key;
+		instrument = data.songs[0].instrument;
+		console.log("bpm: " + beatsPerMin)
 
 		loadMIDI(instrument);
 		loadHTML();
