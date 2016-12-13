@@ -94,7 +94,7 @@ window.onload = function() {
 		//instrument = data.songs[0].instrument;
 
 		loadMIDI(instrument);
-		loadHTML();
+		loadHTML(data.songs[0]);
 		loadMatrix();
 	});
 
@@ -720,7 +720,10 @@ function loadHTML(song) {
 	});
 
 	if (song) {
-		document.getElementById("");
+		console.log("ha");
+		document.getElementById("titleInput").value = song.name;
+		document.getElementById("authorInput").value = song.artist;
+		document.getElementById("descInput").value = song.comment;
 	}
 
 }
