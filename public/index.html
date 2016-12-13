@@ -54,7 +54,7 @@ var height = 16;
 var width = 16;
 var currCol = 0;
 var currColor = "#C05B73";
-var beatsPerMin = 100;
+var beatsPerMin = 60;
 var mouseClick = false;
 var addColor = false;
 var key = 'C';
@@ -93,7 +93,6 @@ window.onload = function() {
 		//key = data.songs[0].key;
 		//instrument = data.songs[0].instrument;
 
-		loadMIDI(instrument);
 		loadHTML(data.songs[0]);
 		loadMatrix();
 	});
@@ -293,6 +292,9 @@ function save() {
 		song.width = noteArray[0].length;
 		song.comment = document.getElementById("descInput").value;
 		song.color = document.getElementById("colorPicker").value;
+		song.key = document.getElementById("keyInput").value;
+		song.bpm = document.getElementById("tempoInput").value;
+		song.instrument = document.getElementById("instrumentInput").value;
 
 		console.log("song data", song);
 		makePost('add-song', JSON.stringify(song));
@@ -355,9 +357,9 @@ function sortSongs() {
 			break;
 			case 'popular':
 			if (a.likes < b.likes) {
-				return -1;
-			} else if (a.likes > b.likes) {
 				return 1;
+			} else if (a.likes > b.likes) {
+				return -1;
 			} else {
 				return 0;
 			}
@@ -634,7 +636,6 @@ function loadHTML(song) {
 	html += '</div>'
 	html += '<div class="tool">'
 	html += '<select id="keyInput">'
-	html += '<option value="" disabled="disabled" selected="selected">Select a key</option>'
 	html += '<option value=0>C</option>'
 	html += '<option value=1>C#</option>'
 	html += '<option value=2>D</option>'
@@ -654,13 +655,13 @@ function loadHTML(song) {
 	html += '</div>'
 	html += '</div>'
 	html += '<center><div class="tool">'
-	html += '<input type="text" id="titleInput" placeholder="Title">'
+	html += '<input type="text" id="titleInput" placeholder="Title" maxlength="40">'
 	html += '</div>'
 	html += '<div class="tool">'
-	html += '<input type="text" id="authorInput" placeholder="Artist">'
+	html += '<input type="text" id="authorInput" placeholder="Artist" maxlength="40">'
 	html += '</div>'
 	html += '<div class="tool">'
-	html += '<input type="text" id="descInput" placeholder="Description">'
+	html += '<textarea id="descInput" placeholder="Description" maxlength="100"></textarea>'
 	html += '</div></center>'
 	html += '<center><div class="tool">'
 	html += '<button type="button" id="saveBtn" onClick="save()">Save</button>'
@@ -722,10 +723,21 @@ function loadHTML(song) {
 	});
 
 	if (song) {
-		console.log("ha");
 		document.getElementById("titleInput").value = song.name;
 		document.getElementById("authorInput").value = song.artist;
 		document.getElementById("descInput").value = song.comment;
+		
+		document.getElementById("colorPicker").value = song.color;
+		currColor = song.color;
+
+		document.getElementById("tempoInput").value = "" + song.bpm;
+		beatsPerMin = 6000 / song.bpm;
+
+		document.getElementById("keyInput").selectedIndex = song.key;
+		offset = song.key;
+
+		document.getElementById("instrumentInput").value = song.instrument;
+		loadMIDI(song.instrument);
 	}
 
 }
