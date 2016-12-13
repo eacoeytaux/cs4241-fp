@@ -471,9 +471,11 @@ function loadSongs() {
 		html += songList[song].artist + "</span></br></br><span class='songComment' id='" 
 		html += song + "' onClick='loadSong(this.id)'>";
 		html += songList[song].comment + "</span>" + "</div><div class='songButton'>";
-		html += '<button type="button" id="' + song + '" onClick="likeButton(this.id)">Like</button>';
-		html += '<span class="songTitle">' + songList[song].likes + '</span>';
-		html += '<button type="button" id="' + song + '" onClick="unlikeButton(this.id)">Unlike</button></div></div><hr>';
+		html += '<center><div><img src="images/upArrow.png" width="30px" alt="Up Vote" id="' + song;
+		html += '" onClick="likeButton(this.id)"></div>';
+		html += '<div><span class="songTitle">' + songList[song].likes + '</span></div>';
+		html += '<div><img src="images/downArrow.png" width="30px" alt="Down Vote" id="' + song;
+		html += '" onClick="unlikeButton(this.id)"></div></center></div></div><hr>';
 
 	}
 
