@@ -265,7 +265,6 @@ var instruments = [
   "/soundfont/choir_aahs-ogg.js",
   "/soundfont/church_organ-ogg.js",
   "/soundfont/clarinet-ogg.js",
-  "/soundfont/clavichord-ogg.js",
   "/soundfont/contrabass-ogg.js",
   "/soundfont/distortion_guitar-ogg.js",
   "/soundfont/drawbar_organ-ogg.js",
