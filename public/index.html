@@ -64,6 +64,8 @@ var currColor = "#C05B73";
 var beatsPerMin = 100;
 var mouseClick = false;
 var addColor = false;
+var key = 'C';
+var instrument = "honkytonk_piano";
 
 var baseNote = 86;
 var offset = 0;
@@ -85,7 +87,7 @@ function loadMIDI(instrumentName, cb) {
 	});
 }
 
-loadMIDI("honkytonk_piano");
+
 
 // Add event listeners to notes
 window.onload = function() {
@@ -94,12 +96,17 @@ window.onload = function() {
 		noteArray = data.songs[0].matrix;
 		height = noteArray.length;
 		width = noteArray[0].length;
+		//beatsPerMin = data.songs[0].bpm;
+		//key = data.songs[0].key;
+		//instrument = data.songs[0].instrument;
 
+		loadMIDI(instrument);
+		loadHTML();
 		loadMatrix();
+
 	});
 
-	loadHTML();
-	loadMatrix();
+	
 
 			// mouse release event anywhere in the document disables mouse click
 			document.addEventListener("mouseup", function(evt) {
