@@ -7,8 +7,6 @@
 	<link rel="stylesheet" type="text/css" href="css/style.css"/>
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Arvo">
 	<link href="https://fonts.googleapis.com/css?family=Ubuntu+Condensed" rel="stylesheet"> 
-
-
 	<!-- polyfill -->
 	<script src="midi/inc/shim/Base64.js" type="text/javascript"></script>
 	<script src="midi/inc/shim/Base64binary.js" type="text/javascript"></script>
@@ -26,15 +24,10 @@
 </head>
 <body>
 	<div class="header">
-
 		<h1 id="mainHeading"><img id="trexImg" src="images/trex2.png" alt="T-Rex Logo">maTRex</h1>
 		<h3>Just the musical matrix that you are looking for!</h3>
 	</div>
-
-	<div class="content">
-
-	</div>
-
+	<div class="content"></div>
 </body>
 
 <script>
@@ -64,6 +57,10 @@ var currColor = "#C05B73";
 var beatsPerMin = 100;
 var mouseClick = false;
 var addColor = false;
+var key = 'C';
+var instrument = "honkytonk_piano";
+
+var intervalVar = window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
 
 var volume = 127;
 var baseNote = 86;
@@ -86,8 +83,6 @@ function loadMIDI(instrumentName, cb) {
 	});
 }
 
-loadMIDI("honkytonk_piano");
-
 // Add event listeners to notes
 window.onload = function() {
 
@@ -95,20 +90,20 @@ window.onload = function() {
 		noteArray = data.songs[0].matrix;
 		height = noteArray.length;
 		width = noteArray[0].length;
+		//beatsPerMin = data.songs[0].bpm;
+		//key = data.songs[0].key;
+		//instrument = data.songs[0].instrument;
 
+		loadMIDI(instrument);
+		loadHTML();
 		loadMatrix();
 	});
 
-	loadHTML();
-	loadMatrix();
-
-			// mouse release event anywhere in the document disables mouse click
-			document.addEventListener("mouseup", function(evt) {
-				mouseClick = false;
-			});
-		}
-
-var intervalVar = window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
+	// mouse release event anywhere in the document disables mouse click
+	document.addEventListener("mouseup", function(evt) {
+		mouseClick = false;
+	});
+}
 
 function loadMatrix(song) {
 
@@ -187,13 +182,12 @@ function loadMatrix(song) {
 			});
 		}
 
-
 		clearInterval(intervalVar);
 		intervalVar = window.setInterval(highlightCol, beatsPerMin);
 	}
 
 
-	function highlightCol() {
+function highlightCol() {
 
 	// Make any active cells white again
 	var el; 
@@ -768,6 +762,6 @@ function loadHTML() {
 			}
 		}
 
-		</script>
+</script>
 
-		</html>
+</html>
