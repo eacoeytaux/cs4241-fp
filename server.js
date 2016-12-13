@@ -10,10 +10,32 @@ var server = http.createServer (function (req, res) {
   var uri = url.parse(req.url);
 
   if (req.method == 'POST') {
-      handlePost(req);
+    var body = '';
+    req.on('data', function (data) {
+      body += data;
+      // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
+      if (body.length > 1e6) { 
+        // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
+        req.connection.destroy();
+      }
+    });
+
+    req.on('end', function () {
+      console.log('POST data', body);
+      switch (req.url) {
+        case 'add-song':
+          saveSong(JSON.parse(body));
+          break;
+        case 'update-rating':
+          updateSongRating(JSON.parse(body));
+          break;
+        default:
+          console.log('handling unknown post request', req.url);
+      }
+    });
   } else if (req.method == 'GET') {
     console.log(uri.pathname);
-    switch( uri.pathname ) {
+    switch (uri.pathname) {
       case '/check-song':
         checkSongs(res, uri);
         break;
@@ -104,23 +126,6 @@ function sendFile(res, filename, contentType) {
   })
 }
 
-function handlePost(req) {
-  var body = '';
-  req.on('data', function (data) {
-    body += data;
-    // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
-    if (body.length > 1e6) { 
-      // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
-      req.connection.destroy();
-    }
-  });
-
-  req.on('end', function () {
-    //console.log('POST data', body);
-    saveSong(JSON.parse(body));
-  });
-}
-
 function checkSongs(res, uri) {
   res.writeHead(200, {'Content-type': 'application/json'});
 
@@ -189,6 +194,26 @@ function searchSongs(res, uri) {
 
       res.end('{"songs":' + JSON.stringify(filteredSongs) + '}');
     } 
+  });
+}
+
+function updateSongRating(updateInfo) {
+  fs.readFile(songFilePath, function(err, data) {
+    if (err) throw err;
+
+    var songs = JSON.parse(data);
+
+    if (songs['songs']) {
+      for (var song in songs['songs']) {
+        if ((songs['songs'][song].name == updateInfo.name) && (songs['songs'][song].artist == updateInfo.artist)) {
+          songs['songs'][song].likes += updateInfo.change;
+        }
+      }
+
+      fs.writeFile(songFilePath, JSON.stringify(songs), function(err) {
+        if (err) throw err;5
+      })
+    }
   });
 }
 
