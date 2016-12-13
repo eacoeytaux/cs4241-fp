@@ -442,7 +442,7 @@ function loadSongs() {
 		if(songList[song].color) {
 			console.log("color defined")
 		}
-		html += "<div class='song'><div class='songMatrix'>";
+		html += "<div class='song' ><div class='songMatrix' id='" + song + "' onClick='loadSong(this.id)'>";
 
     	// only show 8x8 of the matrix if it is larger than 8x8
     	var tempHeight = songList[song].height;
