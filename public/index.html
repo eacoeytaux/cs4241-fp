@@ -186,7 +186,7 @@ function loadMatrix(song) {
 	}
 
 
-function highlightCol() {
+	function highlightCol() {
 
 	// Make any active cells white again
 	var el; 
@@ -479,12 +479,15 @@ function loadSongs() {
 }
 
 
-function loadHTML() {
+function loadHTML(song) {
 
 	var html = '<div id="buffer" class="side-panel"></div>';
 	html +='<div id="matrix" draggable=false>'
 	html += '</div>'
 	html += '<div id="tools" class="side-panel">'
+	html += '<div class="tool">'
+	html += '<input type="range" id="volumeInput" value=127 min=0 max=127>'
+	html += '</div>'
 	html += '<div class="tool">'
 	html += '<button type="button" id="addCol" onClick="addCol()">Add Column</button>'
 	html += '<button type="button" id="removeCol" onClick="removeCol()">Remove Column</button>'
@@ -667,96 +670,100 @@ function loadHTML() {
 	document.getElementsByClassName("content")[0].innerHTML = html;
 
 	document.getElementById("colorPicker").value = currColor;
-			// color picker event listener
-			document.getElementById("colorPicker").addEventListener("change", function() {
-				currColor = document.getElementById("colorPicker").value;
-			})
+	// color picker event listener
+	document.getElementById("colorPicker").addEventListener("change", function() {
+		currColor = document.getElementById("colorPicker").value;
+	})
 
-			// tempo input event listener
-			document.getElementById("tempoInput").addEventListener("change", function() {
-			    beatsPerMin = 6000 / document.getElementById("tempoInput").value; //TODO error checking
+	// tempo input event listener
+	document.getElementById("tempoInput").addEventListener("change", function() {
+	    beatsPerMin = 6000 / document.getElementById("tempoInput").value; //TODO error checking
 
-			    clearInterval(intervalVar);
-			    intervalVar = window.setInterval(highlightCol, beatsPerMin);
-			});
+	    clearInterval(intervalVar);
+	    intervalVar = window.setInterval(highlightCol, beatsPerMin);
+	});
 
-			// instrument input event listener
-			document.getElementById("instrumentInput").addEventListener("change", function() {
-				console.log(document.getElementById("instrumentInput").value);
-				loadMIDI(document.getElementById("instrumentInput").value);
-			});
+	// instrument input event listener
+	document.getElementById("instrumentInput").addEventListener("change", function() {
+		console.log(document.getElementById("instrumentInput").value);
+		loadMIDI(document.getElementById("instrumentInput").value);
+	});
 
-			// key input event listener
-			document.getElementById("keyInput").addEventListener("change", function() {
-				offset = parseInt(document.getElementById("keyInput").value);
-			});
+	// key input event listener
+	document.getElementById("keyInput").addEventListener("change", function() {
+		offset = parseInt(document.getElementById("keyInput").value);
+	});
 
-			document.getElementById("trexImg").addEventListener("mouseover", function() {
-				document.getElementById("trexImg").src = "images/trex3.png";
-			});
-			document.getElementById("trexImg").addEventListener("mouseout", function() {
-				document.getElementById("trexImg").src = "images/trex2.png";
-			});
+	document.getElementById("trexImg").addEventListener("mouseover", function() {
+		document.getElementById("trexImg").src = "images/trex3.png";
+	});
+	document.getElementById("trexImg").addEventListener("mouseout", function() {
+		document.getElementById("trexImg").src = "images/trex2.png";
+	});
 
-			// title input event listener
-			document.getElementById("titleInput").addEventListener("change", function() {
-				// save the matrix title
-				console.log("new title");
-			});
+	// title input event listener
+	document.getElementById("titleInput").addEventListener("change", function() {
+		// save the matrix title
+		console.log("new title");
+	});
 
-			// author input event listener
-			document.getElementById("authorInput").addEventListener("change", function() {
-				// save the matrix author
-				console.log("new author");
-			});
+	// author input event listener
+	document.getElementById("authorInput").addEventListener("change", function() {
+		// save the matrix author
+		console.log("new author");
+	});
 
-			// description input event listener
-			document.getElementById("descInput").addEventListener("change", function() {
-				// save the matrix description
-				console.log("new description");
-			});
+	// description input event listener
+	document.getElementById("descInput").addEventListener("change", function() {
+		// save the matrix description
+		console.log("new description");
+	});
 
-		}
+	if (song) {
+		document.getElementById("");
+	}
 
-		function loadSong(songID) {
-			noteArray = songList[songID].matrix;
-			height = noteArray.length;
-			width = noteArray[0].length;
-			loadHTML();
-			loadMatrix();
-		}
+}
 
-		function likeButton(songID) {
+function loadSong(songID) {
+	noteArray = songList[songID].matrix;
+	height = noteArray.length;
+	width = noteArray[0].length;
+	loadHTML(songList[songID]);
+	loadMatrix();
+}
 
-			songList[songID].likes += 1;
-			console.log("add like to song: " + songID);
+function likeButton(songID) {
 
-			makePost('/update-rating', '{"name":"' + songList[songID].name + '","artist":"' + songList[songID].artist + '","likes":' + songList[songID].likes + '}');
+	songList[songID].likes += 1;
+	console.log("add like to song: " + songID);
 
-		}
+	makePost('/update-rating', '{"name":"' + songList[songID].name + '","artist":"' + songList[songID].artist + '","likes":' + songList[songID].likes + '}');
 
-		function makeGet(url, cb) {
-			var req = new XMLHttpRequest();
-			req.onreadystatechange = function() { handleRes(req, cb); }
-			req.open('GET', url);
-			req.send();
-		}
+}
 
-		function makePost(url, params) {
-			var req = new XMLHttpRequest();
-			req.onreadystatechange = function() { console.log('POST complete'); }
-			req.open('POST', url);
-			req.send(params);
-		}
+function makeGet(url, cb) {
+	var req = new XMLHttpRequest();
+	req.onreadystatechange = function() { handleRes(req, cb); }
+	req.open('GET', url);
+	req.send();
+}
 
-		function handleRes(req, cb) {
-			if (req.readyState !== XMLHttpRequest.DONE) {
-				return;
-			} else if (req.status === 200) {
-				if (cb) cb(JSON.parse(req.responseText));
-			}
-		}
+function makePost(url, params) {
+	var req = new XMLHttpRequest();
+	req.onreadystatechange = function() { console.log('POST complete'); }
+	req.open('POST', url);
+	req.send(params);
+}
 
-		</script>
+function handleRes(req, cb) {
+	if (req.readyState !== XMLHttpRequest.DONE) {
+		return;
+	} else if (req.status === 200) {
+		if (cb) cb(JSON.parse(req.responseText));
+	}
+}
+
+</script>
 
 </html>
