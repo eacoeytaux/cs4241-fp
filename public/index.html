@@ -62,6 +62,7 @@ var instrument = "honkytonk_piano";
 
 var intervalVar = window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
 
+var volume = 127;
 var baseNote = 86;
 var offset = 0;
 
@@ -214,7 +215,7 @@ function highlightCol() {
 			el = document.getElementById(row+ ':' + currCol)
 			el.style.backgroundColor = currColor;
 
-			MIDI.noteOn(0, getNoteVal(row, baseNote + offset), 127, 0);
+			MIDI.noteOn(0, getNoteVal(row, baseNote + offset), volume, 0);
 		}
 	}
 }
@@ -486,6 +487,7 @@ function loadHTML() {
 	html +='<div id="matrix" draggable=false>'
 	html += '</div>'
 	html += '<div id="tools" class="side-panel">'
+	html += '<div class="tool"><input type="range" id="volumeInput" min="0" max="127" value="127"></div>'
 	html += '<div class="tool">'
 	html += '<button type="button" id="addCol" onClick="addCol()">Add Column</button>'
 	html += '<button type="button" id="removeCol" onClick="removeCol()">Remove Column</button>'
@@ -520,7 +522,6 @@ function loadHTML() {
 	html += '<option value="choir_aahs">Choir Aahs</option>'
 	html += '<option value="church_organ">Church Organ</option>'
 	html += '<option value="clarinet">Clarinet</option>'
-	html += '<option value="clavichord">Clavichord</option>'
 	html += '<option value="contrabass">Contrabass</option>'
 	html += '<option value="distortion_guitar">Distortion Guitar</option>'
 	html += '<option value="drawbar_organ">Drawbar Organ</option>'
@@ -685,6 +686,10 @@ function loadHTML() {
 			document.getElementById("instrumentInput").addEventListener("change", function() {
 				console.log(document.getElementById("instrumentInput").value);
 				loadMIDI(document.getElementById("instrumentInput").value);
+			});
+
+			document.getElementById("volumeInput").addEventListener("change", function() {
+				volume = parseInt(document.getElementById("volumeInput").value);
 			});
 
 			// key input event listener
