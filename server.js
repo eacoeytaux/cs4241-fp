@@ -23,10 +23,10 @@ var server = http.createServer (function (req, res) {
     req.on('end', function () {
       console.log('POST data', body);
       switch (req.url) {
-        case 'add-song':
+        case '/add-song':
           saveSong(JSON.parse(body));
           break;
-        case 'update-rating':
+        case '/update-rating':
           updateSongRating(JSON.parse(body));
           break;
         default:
@@ -139,7 +139,7 @@ function checkSongs(res, uri) {
       songsList = songs['songs'];
 
       for (var song in songsList) {
-        if ((songsList[song].name == titleArtist[0]) && (songsList[song].artist == titleArtist[1])) {
+        if ((songsList[song].name.toLowerCase() == titleArtist[0].toLowerCase()) && (songsList[song].artist.toLowerCase() == titleArtist[1].toLowerCase())) {
           res.end(false);
         }
       }
@@ -153,6 +153,8 @@ function checkSongs(res, uri) {
 function searchSongs(res, uri) {
   res.writeHead(200, {'Content-type': 'application/json'});
 
+  uri.query = uri.query.replace('%20', ' ');
+
   fs.readFile(songFilePath, function(err, data) {
     if (err) throw err;
 
@@ -164,11 +166,11 @@ function searchSongs(res, uri) {
 
       for (var song in songsList) {
         if (uri.pathname == '/search-song') {
-          if (songsList[song]['name'].indexOf(uri.query) > -1) {
+          if (songsList[song]['name'].toLowerCase().indexOf(uri.query.toLowerCase()) > -1) {
             filteredSongs.push(songsList[song])
           }
         } else if (uri.pathname == '/search-artist') {
-          if (songsList[song]['artist'].indexOf(uri.query) > -1) {
+          if (songsList[song]['artist'].toLowerCase().indexOf(uri.query.toLowerCase()) > -1) {
             filteredSongs.push(songsList[song])
           }
         }
@@ -206,12 +208,14 @@ function updateSongRating(updateInfo) {
     if (songs['songs']) {
       for (var song in songs['songs']) {
         if ((songs['songs'][song].name == updateInfo.name) && (songs['songs'][song].artist == updateInfo.artist)) {
-          songs['songs'][song].likes += updateInfo.change;
+          console.log('found song!');
+          songs['songs'][song].likes = updateInfo.likes;
         }
       }
 
       fs.writeFile(songFilePath, JSON.stringify(songs), function(err) {
-        if (err) throw err;5
+        if (err) throw err;
+        console.log('song updated!');
       })
     }
   });

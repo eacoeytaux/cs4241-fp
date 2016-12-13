@@ -65,89 +65,47 @@ var beatsPerMin = 100;
 var mouseClick = false;
 var addColor = false;
 
+var baseNote = 86;
+var offset = 0;
+
 // stores the global list of all songs
 var songList = []
 
 function loadMIDI(instrumentName, cb) {
 	MIDI.loadPlugin({
-	soundfontUrl: "./soundfont/",
-	instrument: instrumentName,
-	onprogress: function(state, progress) {
-		console.log(state, progress);
-	},
-	onsuccess: function() {
-		MIDI.programChange(0, MIDI.GM.byName[instrumentName].number);
-		if (cb) cb();
-	}
+		soundfontUrl: "./soundfont/",
+		instrument: instrumentName,
+		onprogress: function(state, progress) {
+			console.log(state, progress);
+		},
+		onsuccess: function() {
+			MIDI.programChange(0, MIDI.GM.byName[instrumentName].number);
+			if (cb) cb();
+		}
 	});
 }
+
+loadMIDI("honkytonk_piano");
 
 // Add event listeners to notes
 window.onload = function() {
 
-	loadMIDI("honkytonk_piano", function() {
+	makeGet('/search-song?', function(data) {
+		noteArray = data.songs[0].matrix;
+		height = noteArray.length;
+		width = noteArray[0].length;
 
-			makeGet('/search-song?', function(data) {
-				noteArray = data.songs[0].matrix;
-				height = noteArray.length;
-				width = noteArray[0].length;
+		loadMatrix();
+	});
 
-				loadMatrix();
-			});
-
-			loadHTML();
-			loadMatrix();
+	loadHTML();
+	loadMatrix();
 
 			// mouse release event anywhere in the document disables mouse click
 			document.addEventListener("mouseup", function(evt) {
 				mouseClick = false;
 			});
-
-			document.getElementById("colorPicker").value = currColor;
-			// color picker event listener
-			document.getElementById("colorPicker").addEventListener("change", function() {
-				currColor = document.getElementById("colorPicker").value;
-			})
-
-			// tempo input event listener
-			document.getElementById("tempoInput").addEventListener("change", function() {
-			    beatsPerMin = 6000 / document.getElementById("tempoInput").value; //TODO error checking
-
-			    clearInterval(intervalVar);
-			    intervalVar = window.setInterval(highlightCol, beatsPerMin);
-			});
-
-			// instrument input event listener
-			document.getElementById("instrumentInput").addEventListener("change", function() {
-				loadMIDI(document.getElementById("instrumentInput").value);
-			});
-
-			document.getElementById("trexImg").addEventListener("mouseover", function() {
-				document.getElementById("trexImg").src = "images/trex3.png";
-			});
-			document.getElementById("trexImg").addEventListener("mouseout", function() {
-				document.getElementById("trexImg").src = "images/trex2.png";
-			});
-
-			// title input event listener
-			document.getElementById("titleInput").addEventListener("change", function() {
-				// save the matrix title
-				console.log("new title");
-			});
-			  
-			// author input event listener
-			document.getElementById("authorInput").addEventListener("change", function() {
-				// save the matrix author
-				console.log("new author");
-			});
-			  
-			// description input event listener
-			document.getElementById("descInput").addEventListener("change", function() {
-				// save the matrix description
-				console.log("new description");
-			});
-		});
-}
+		}
 
 var intervalVar = window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
 
@@ -227,10 +185,14 @@ function loadMatrix(song) {
 				}
 			});
 		}
-}
 
 
-function highlightCol() {
+		clearInterval(intervalVar);
+		intervalVar = window.setInterval(highlightCol, beatsPerMin);
+	}
+
+
+	function highlightCol() {
 
 	// Make any active cells white again
 	var el; 
@@ -239,7 +201,7 @@ function highlightCol() {
 			el = document.getElementById(row+ ':' + currCol);
 			el.style.backgroundColor = '#F0F0F0';
 
-			MIDI.noteOff(0, getNoteVal(row, 50), 0.75);
+			MIDI.noteOff(0, getNoteVal(row, baseNote + offset), 0.75);
 		}
 	}
 
@@ -257,15 +219,15 @@ function highlightCol() {
 			el = document.getElementById(row+ ':' + currCol)
 			el.style.backgroundColor = currColor;
 
-			MIDI.noteOn(0, getNoteVal(row, 50), 127, 0);
+			MIDI.noteOn(0, getNoteVal(row, baseNote + offset), 127, 0);
 		}
 	}
 }
 
-var pentatonicScale = [0, 3, 5, 8, 10];
+var pentatonicScale = [10, 8, 5, 3, 0];
 function getNoteVal(col, offset) {
 	var octave = Math.floor(col / 5) + 2;
-	var noteVal = pentatonicScale[(col % 5)] + (octave * 12) + offset;
+	var noteVal = pentatonicScale[(col % 5)] - (octave * 12) + offset;
 	return noteVal;
 }
 
@@ -349,8 +311,8 @@ function save() {
 function back() {
 	if (confirm("Just a head's up, you will lose any unsaved progress!") == true) {
 		loadHome();
-    } else {
-    } 
+	} else {
+	} 
 }
 
 function searchArtist(songID) {
@@ -362,7 +324,7 @@ function searchArtist(songID) {
 	makeGet(artistName, function(data) {
 		
 		clearInterval(intervalVar);
-	    /* Get the current song list */
+		/* Get the current song list */
 		songList = data.songs;
 		console.log("data: ", data); 
 		loadHomeHTML();
@@ -378,69 +340,148 @@ function loadHome() {
 
 	clearInterval(intervalVar);
 
-    /* Get the current song list */
-    makeGet('/search-song?', function(data) {
+	/* Get the current song list */
+	makeGet('/search-song?', function(data) {
 		songList = data.songs;
 		loadHomeHTML();
 	});
 }
 
+function sortSongs() {
+	songList = songList.sort(function(a, b) {
+		switch (document.getElementById("sortType").value) {
+			case 'recent':
+			if (a.date < b.date) {
+				return -1;
+			} else if (a.date > b.date) {
+				return 1;
+			} else {
+				return 0;
+			}
+			break;
+			case 'popular':
+			if (a.likes < b.likes) {
+				return -1;
+			} else if (a.likes > b.likes) {
+				return 1;
+			} else {
+				return 0;
+			}
+			break;
+			case 'alphabetical':
+			if (a.name < b.name) {
+				return -1;
+			} else if (a.name > b.name) {
+				return 1;
+			} else {
+				return 0;
+			}
+			break;
+		}
+	});
+
+	loadSongs();
+}
+
+function search() {
+
+	var cb = function(data) {
+		songList = data.songs;
+
+		sortSongs();
+	}
+
+	var input = document.getElementById("searchText").value;
+	switch (document.getElementById("searchType").value) {
+		case 'song':
+		makeGet('/search-song?' + input, cb);
+		break;
+		case 'artist':
+		makeGet('/search-artist?' + input, cb);
+		break;
+	}
+}
+
 function loadHomeHTML() {
 
-		/* html string to store new html to load */
-	    html = "";
+	/* html string to store new html to load */
+	html = '<div id="searchArea"><center>';
 
-	    for(var song = 0; song < songList.length; song++) {
+	html += '<span>';
+	html += 'Search by: <select id="searchType"><option value="song">Song</option><option value="artist">Artist</option></select>';
+	html += '</span>';
 
-	    	console.log(songList[song].name);
-	    	console.log(songList[song].color);
-	    	var colorString;
-	    	if(songList[song].color) {
-	    		console.log("color defined")
-	    	}
-	    	html += "<div class='song'><div class='songMatrix'>";
+	html += '<span id="searchBar">';
+	html += '<input type="text" id="searchText" placeholder="Search">';
+	html += '<button id="searchButton" onclick="search();">Search</button>';
+	html += '</span>';
 
-	    	// only show 8x8 of the matrix if it is larger than 8x8
-	    	var tempHeight = songList[song].height;
-	    	var tempWidth = songList[song].width
-	    	if(tempHeight > 8) {
-	    		tempHeight = 8;
-	    	}
-	    	if(tempWidth > 8) {
-	    		tempWidth = 8;
-	    	}
+	html += '<span>';
+	html += 'Sort by: <select id="sortType"><option value="recent">Recent</option><option value="popular">Popular</option><option value="alphabetical">Alphabetical</option></select>';
+	html += '</span>';
 
-	    	// Add the correct number of notes to the matrix
-			for(var row = 0; row < tempHeight; row++) {
+	html += '</center></div>';
 
-				html += '<div class="smallRow">';
-				for(var col = 0; col < tempWidth; col++) {
-					// determine if that square is highlighted of not
-					if(songList[song].matrix[row][col]) {
-						colorString = '#F0F0F0';
-					}
-					else {
-						colorString = '#494949';
-					}
-					html += '<div class="smallNote" style="background-color: ' + colorString + ';"></div>';
+	html += "<div id=\"songList\"></div>";
+	html += "<center><div class='tool'><button type='button' id='refreshBtn' onClick='refresh()'>Refresh</button></div></center>"
+	document.getElementsByClassName("content")[0].innerHTML = html;
+
+	document.getElementById("sortType").addEventListener("change", sortSongs);
+
+	loadSongs();
+}
+
+function loadSongs() {
+	var html = '';
+
+	for(var song = 0; song < songList.length; song++) {
+
+		console.log(songList[song].name);
+		console.log(songList[song].color);
+		var colorString;
+		if(songList[song].color) {
+			console.log("color defined")
+		}
+		html += "<div class='song'><div class='songMatrix'>";
+
+    	// only show 8x8 of the matrix if it is larger than 8x8
+    	var tempHeight = songList[song].height;
+    	var tempWidth = songList[song].width
+    	if(tempHeight > 8) {
+    		tempHeight = 8;
+    	}
+    	if(tempWidth > 8) {
+    		tempWidth = 8;
+    	}
+
+    	// Add the correct number of notes to the matrix
+    	for(var row = 0; row < tempHeight; row++) {
+
+    		html += '<div class="smallRow">';
+    		for(var col = 0; col < tempWidth; col++) {
+				// determine if that square is highlighted of not
+				if(songList[song].matrix[row][col]) {
+					colorString = '#F0F0F0';
 				}
-				html += '</div>';
+				else {
+					colorString = '#494949';
+				}
+				html += '<div class="smallNote" style="background-color: ' + colorString + ';"></div>';
 			}
+			html += '</div>';
+		}
 
-	    	html += "</div><div class='songInfo'><span class='songTitle' id='" + song + "' onClick='loadSong(this.id)'>" 
-	    	html += songList[song].name;
-	    	html += "</span></br><span class='songArtist' id='" + song + "' onClick='searchArtist(this.id)'>";
-	    	html += songList[song].artist + "</span></br></br><span class='songComment' id='" 
-	    	html += song + "' onClick='loadSong(this.id)'>";
-	    	html += songList[song].comment + "</span>" + "</div><div class='songButton'>";
-	    	html += '<button type="button" id="' + song + '" onClick="likeButton(this.id)">Like</button></div></div><hr>'
+		html += "</div><div class='songInfo'><span class='songTitle' id='" + song + "' onClick='loadSong(this.id)'>" 
+		html += songList[song].name;
+		html += "</span></br><span class='songArtist' id='" + song + "' onClick='searchArtist(this.id)'>";
+		html += songList[song].artist + "</span></br></br><span class='songComment' id='" 
+		html += song + "' onClick='loadSong(this.id)'>";
+		html += songList[song].comment + "</span>" + "</div><div class='songButton'>";
+		html += '<button type="button" id="' + song + '" onClick="likeButton(this.id)">Like</button></div></div><hr>'
 
-	    }
+	}
 
-		html += ""
-		html += "<center><div class='tool'><button type='button' id='refreshBtn' onClick='refresh()'>Refresh</button></div></center>"
-		document.getElementsByClassName("content")[0].innerHTML = html;
-
+	document.getElementById("songList").innerHTML = html;
 }
 
 
@@ -459,7 +500,7 @@ function loadHTML() {
 	html += '<button type="button" id="removeRow" onClick="removeRow()">Remove Row</button>'
 	html += '</div>'
 	html += '<div class="tool">'
-	html += '<input type="text" id="tempoInput" placeholder="BPM" value="120">BPM'
+	html += '<input type="text" id="tempoInput" placeholder="BPM" value="100">BPM'
 	html += '</div>'
 	html += '<div class="tool">'
 	html += '<select id="instrumentInput">'
@@ -470,201 +511,258 @@ function loadHTML() {
 	html += '<option value="acoustic_guitar_steel">Acoustic Guitar Steel</option>'
 	html += '<option value="agogo">Agogo</option>'
 	html += '<option value="alto_sax">Alto Sax</option>'
-	  					html += '<option value="applause">Applause</option>'
-	  					html += '<option value="banjo">Banjo</option>'
-	  					html += '<option value="baritone_sax">Baritone Sax</option>'
-	  					html += '<option value="bassoon">Bassoon</option>'
-	  					html += '<option value="bird_tweet">Bird Tweet</option>'
-	  					html += '<option value="blown_bottle">Blown Bottle'
-	  					html += '<option value="brass_section">Brass Section</option>'
-	  					html += '<option value="breath_noise">Breath Noise</option>'
-	  					html += '<option value="bright_acoustic_piano">Bright Acoustic Piano</option>'
-	  					html += '<option value="celesta">Celesta</option>'
-	  					html += '<option value="cello">Cello</option>'
-	  					html += '<option value="choir_aahs">Choir Aahs</option>'
-	  					html += '<option value="church_organ">Church Organ</option>'
-	  					html += '<option value="clarinet">Clarinet</option>'
-	  					html += '<option value="clavichord">Clavichord</option>'
-	  					html += '<option value="contrabass">Contrabass</option>'
-	  					html += '<option value="distortion_guitar">Distortion Guitar</option>'
-	  					html += '<option value="drawbar_organ">Drawbar Organ</option>'
-	  					html += '<option value="dulcimer">Dulcimer</option>'
-	  					html += '<option value="electric_bass_finger">Electric Bass Finger</option>'
-	  					html += '<option value="electric_bass_pick">Electric Bass Pick</option>'
-	  					html += '<option value="electric_grand_piano">Electric Grand Piano</option>'
-	  					html += '<option value="electric_guitar_clean">Electric Guitar Clean</option>'
-	  					html += '<option value="electric_guitar_jazz">Electric Guitar Jazz</option>'
-	  					html += '<option value="electric_guitar_muted">Electric Guitar Muted</option>'
-	  					html += '<option value="electric_piano_1">Electric Piano 1</option>'
-	  					html += '<option value="electric_piano_2">Electric Piano 2</option>'
-	  					html += '<option value="english_horn">English Horn</option>'
-	  					html += '<option value="fiddle">Fiddle</option>'
-	  					html += '<option value="flute">Flute</option>'
-	  					html += '<option value="french_horn">French Horn</option>'
-	  					html += '<option value="fretless_bass">Fretless Bass</option>'
-	  					html += '<option value="fx_1_rain">Fx 1 Rain</option>'
-	  					html += '<option value="fx_2_soundtrack">Fx 2 Soundtrack</option>'
-	  					html += '<option value="fx_3_crystal">Fx 3 Crystal</option>'
-	  					html += '<option value="fx_4_atmosphere">Fx 4 Atmosphere</option>'
-	  					html += '<option value="fx_5_brightness">Fx 5 Brightness</option>'
-	  					html += '<option value="fx_6_goblins">Fx 6 Goblins</option>'
-	  					html += '<option value="fx_7_echoes">Fx 7 Echoes</option>'
-	  					html += '<option value="fx_8_scifi">Fx 8 Scifi</option>'
-	  					html += '<option value="glockenspiel">Glockenspiel</option>'
-	  					html += '<option value="guitar_fret_noise">Guitar Fret Noise</option>'
-	  					html += '<option value="guitar_harmonics">Guitar Harmonics</option>'
-	  					html += '<option value="gunshot">Gunshot</option>'
-	  					html += '<option value="harmonica">Harmonica</option>'
-	  					html += '<option value="harpsichord">Harpsichord</option>'
-	  					html += '<option value="helicopter">Helicopter</option>'
-	  					html += '<option selected="selected" value="honkytonk_piano">Honkytonk Piano</option>'
-	  					html += '<option value="kalimba">Kalimba</option>'
-	  					html += '<option value="koto">Koto</option>'
-	  					html += '<option value="lead_1_square">Lead 1 Square</option>'
-	  					html += '<option value="lead_2_sawtooth">Lead 2 Sawtooth</option>'
-	  					html += '<option value="lead_3_calliope">Lead 3 Calliope</option>'
-	  					html += '<option value="lead_4_chiff">Lead 4 Chiff</option>'
-	  					html += '<option value="lead_5_charang">Lead 5 Charang</option>'
-	  					html += '<option value="lead_6_voice">Lead 6 Voice</option>'
-	  					html += '<option value="lead_7_fifths">Lead 7 Fifths</option>'
-	  					html += '<option value="lead_8_bass_lead">Lead 8 Bass Lead</option>'
-	  					html += '<option value="marimba">Marimba</option>'
-	  					html += '<option value="melodic_tom">Melodic Tom</option>'
-	  					html += '<option value="music_box">Music Box</option>'
-	  					html += '<option value="muted_trumpet">Muted Trumpet</option>'
-	  					html += '<option value="oboe">Oboe</option>'
-	  					html += '<option value="ocarina">Ocarina</option>'
-	  					html += '<option value="orchestra_hit">Orchestra Hit</option>'
-	  					html += '<option value="orchestral_harp">Orchestral Harp</option>'
-	  					html += '<option value="overdriven_guitar">Overdriven Guitar</option>'
-	  					html += '<option value="pad_1_new_age">Pad 1 New Age</option>'
-	  					html += '<option value="pad_2_warm">Pad 2 Warm</option>'
-	  					html += '<option value="pad_3_polysynth">Pad 3 Polysynth</option>'
-	  					html += '<option value="pad_4_choir">Pad 4 Choir</option>'
-	  					html += '<option value="pad_5_bowed">Pad 5 Bowed</option>'
-	  					html += '<option value="pad_6_metallic">Pad 6 Metallic</option>'
-	  					html += '<option value="pad_7_halo">Pad 7 Halo</option>'
-	  					html += '<option value="pad_8_sweep">Pad 8 Sweep</option>'
-	  					html += '<option value="pan_flute">Pan Flute</option>'
-	  					html += '<option value="percussive_organ">Percussive Organ</option>'
-	  					html += '<option value="piccolo">Piccolo</option>'
-	  					html += '<option value="pizzicato_strings">Pizzicato Strings</option>'
-	  					html += '<option value="recorder">Recorder</option>'
-	  					html += '<option value="reed_organ">Reed Organ</option>'
-	  					html += '<option value="reverse_cymbal">Reverse Cymbal</option>'
-	  					html += '<option value="rock_organ">Rock Organ</option>'
-	  					html += '<option value="seashore">Seashore</option>'
-	  					html += '<option value="shakuhachi">Shakuhachi</option>'
-	  					html += '<option value="shamisen">Shamisen</option>'
-	  					html += '<option value="shanai">Shanai</option>'
-	  					html += '<option value="sitar">Sitar</option>'
-	  					html += '<option value="slap_bass_1">Slap Bass 1</option>'
-	  					html += '<option value="slap_bass_2">Slap Bass 2</option>'
-	  					html += '<option value="soprano_sax">Soprano Sax</option>'
-	  					html += '<option value="steel_drums">Steel Drums</option>'
-	  					html += '<option value="string_ensemble_1">String Ensemble 1</option>'
-	  					html += '<option value="string_ensemble_2">String Ensemble 2</option>'
-	  					html += '<option value="synth_bass_1">Synth Bass 1</option>'
-	  					html += '<option value="synth_bass_2">Synth Bass 2</option>'
-	  					html += '<option value="synth_drum">Synth Drum</option>'
-	  					html += '<option value="synth_voice">Synth Voice</option>'
-	  					html += '<option value="synthbrass_1">Synthbrass 1</option>'
-	  					html += '<option value="synthbrass_2">Synthbrass 2</option>'
-	  					html += '<option value="synthstrings_1">Synthstrings 1</option>'
-	  					html += '<option value="synthstrings_2">Synthstrings 2</option>'
-	  					html += '<option value="taiko_drum">Taiko Drum</option>'
-	  					html += '<option value="tango_accordion">Tango Accordion</option>'
-	  					html += '<option value="telephone_ring">Telephone Ring</option>'
-	  					html += '<option value="tenor_sax">Tenor Sax</option>'
-	  					html += '<option value="timpani">Timpani</option>'
-	  					html += '<option value="tinkle_bell">Tinkle Bell</option>'
-	  					html += '<option value="tremolo_strings">Tremolo Strings</option>'
-	  					html += '<option value="trombone">Trombone</option>'
-	  					html += '<option value="trumpet">Trumpet</option>'
-	  					html += '<option value="tuba">Tuba</option>'
-	  					html += '<option value="tubular_bells">Tubular Bells</option>'
-	  					html += '<option value="vibraphone">Vibraphone</option>'
-	  					html += '<option value="viola">Viola</option>'
-	  					html += '<option value="violin">Violin</option>'
-	  					html += '<option value="voice_oohs">Voice Oohs</option>'
-	  					html += '<option value="whistle">Whistle</option>'
-	  					html += '<option value="woodblock">Woodblock</option>'
-	  					html += '<option value="xylophone">Xylophone</option>'
-					html += '</select>'
-				html += '</div>'
-				html += '<div class="tool">'
-					html += '<select>'
-						html += '<option value="" disabled="disabled" selected="selected">Select a key</option>'
-						html += '<option value="c">C</option>'
-						html += '<option value="d">D</option>'
-						html += '<option value="e">E</option>'
-						html += '<option value="f">F</option>'
-						html += '<option value="g">G</option>'
-						html += '<option value="a">A</option>'
-						html += '<option value="b">B</option>'
-					html += '</select>'
-				html += '</div>'
-				html += '<div class="tool">'
-					html += '<input type="color" id="colorPicker">'
-				html += '</div>'
-			html += '</div>'
-			html += '<center><div class="tool">'
-				html += '<input type="text" id="titleInput" placeholder="Title">'
-			html += '</div>'
-			html += '<div class="tool">'
-				html += '<input type="text" id="authorInput" placeholder="Artist">'
-			html += '</div>'
-			html += '<div class="tool">'
-				html += '<input type="text" id="descInput" placeholder="Description">'
-			html += '</div></center>'
-			html += '<center><div class="tool">'
-				html += '<button type="button" id="saveBtn" onClick="save()">Save</button>'
-			html += '</div></center>'
-			html += '<center><div class="tool">'
-				html += '<button type="button" id="deleteBtn" onClick="back()">Back</button>'
-			html += '</div></center>';
+	html += '<option value="applause">Applause</option>'
+	html += '<option value="banjo">Banjo</option>'
+	html += '<option value="baritone_sax">Baritone Sax</option>'
+	html += '<option value="bassoon">Bassoon</option>'
+	html += '<option value="bird_tweet">Bird Tweet</option>'
+	html += '<option value="blown_bottle">Blown Bottle'
+	html += '<option value="brass_section">Brass Section</option>'
+	html += '<option value="breath_noise">Breath Noise</option>'
+	html += '<option value="bright_acoustic_piano">Bright Acoustic Piano</option>'
+	html += '<option value="celesta">Celesta</option>'
+	html += '<option value="cello">Cello</option>'
+	html += '<option value="choir_aahs">Choir Aahs</option>'
+	html += '<option value="church_organ">Church Organ</option>'
+	html += '<option value="clarinet">Clarinet</option>'
+	html += '<option value="clavichord">Clavichord</option>'
+	html += '<option value="contrabass">Contrabass</option>'
+	html += '<option value="distortion_guitar">Distortion Guitar</option>'
+	html += '<option value="drawbar_organ">Drawbar Organ</option>'
+	html += '<option value="dulcimer">Dulcimer</option>'
+	html += '<option value="electric_bass_finger">Electric Bass Finger</option>'
+	html += '<option value="electric_bass_pick">Electric Bass Pick</option>'
+	html += '<option value="electric_grand_piano">Electric Grand Piano</option>'
+	html += '<option value="electric_guitar_clean">Electric Guitar Clean</option>'
+	html += '<option value="electric_guitar_jazz">Electric Guitar Jazz</option>'
+	html += '<option value="electric_guitar_muted">Electric Guitar Muted</option>'
+	html += '<option value="electric_piano_1">Electric Piano 1</option>'
+	html += '<option value="electric_piano_2">Electric Piano 2</option>'
+	html += '<option value="english_horn">English Horn</option>'
+	html += '<option value="fiddle">Fiddle</option>'
+	html += '<option value="flute">Flute</option>'
+	html += '<option value="french_horn">French Horn</option>'
+	html += '<option value="fretless_bass">Fretless Bass</option>'
+	html += '<option value="fx_1_rain">Fx 1 Rain</option>'
+	html += '<option value="fx_2_soundtrack">Fx 2 Soundtrack</option>'
+	html += '<option value="fx_3_crystal">Fx 3 Crystal</option>'
+	html += '<option value="fx_4_atmosphere">Fx 4 Atmosphere</option>'
+	html += '<option value="fx_5_brightness">Fx 5 Brightness</option>'
+	html += '<option value="fx_6_goblins">Fx 6 Goblins</option>'
+	html += '<option value="fx_7_echoes">Fx 7 Echoes</option>'
+	html += '<option value="fx_8_scifi">Fx 8 Scifi</option>'
+	html += '<option value="glockenspiel">Glockenspiel</option>'
+	html += '<option value="guitar_fret_noise">Guitar Fret Noise</option>'
+	html += '<option value="guitar_harmonics">Guitar Harmonics</option>'
+	html += '<option value="gunshot">Gunshot</option>'
+	html += '<option value="harmonica">Harmonica</option>'
+	html += '<option value="harpsichord">Harpsichord</option>'
+	html += '<option value="helicopter">Helicopter</option>'
+	html += '<option selected="selected" value="honkytonk_piano">Honkytonk Piano</option>'
+	html += '<option value="kalimba">Kalimba</option>'
+	html += '<option value="koto">Koto</option>'
+	html += '<option value="lead_1_square">Lead 1 Square</option>'
+	html += '<option value="lead_2_sawtooth">Lead 2 Sawtooth</option>'
+	html += '<option value="lead_3_calliope">Lead 3 Calliope</option>'
+	html += '<option value="lead_4_chiff">Lead 4 Chiff</option>'
+	html += '<option value="lead_5_charang">Lead 5 Charang</option>'
+	html += '<option value="lead_6_voice">Lead 6 Voice</option>'
+	html += '<option value="lead_7_fifths">Lead 7 Fifths</option>'
+	html += '<option value="lead_8_bass_lead">Lead 8 Bass Lead</option>'
+	html += '<option value="marimba">Marimba</option>'
+	html += '<option value="melodic_tom">Melodic Tom</option>'
+	html += '<option value="music_box">Music Box</option>'
+	html += '<option value="muted_trumpet">Muted Trumpet</option>'
+	html += '<option value="oboe">Oboe</option>'
+	html += '<option value="ocarina">Ocarina</option>'
+	html += '<option value="orchestra_hit">Orchestra Hit</option>'
+	html += '<option value="orchestral_harp">Orchestral Harp</option>'
+	html += '<option value="overdriven_guitar">Overdriven Guitar</option>'
+	html += '<option value="pad_1_new_age">Pad 1 New Age</option>'
+	html += '<option value="pad_2_warm">Pad 2 Warm</option>'
+	html += '<option value="pad_3_polysynth">Pad 3 Polysynth</option>'
+	html += '<option value="pad_4_choir">Pad 4 Choir</option>'
+	html += '<option value="pad_5_bowed">Pad 5 Bowed</option>'
+	html += '<option value="pad_6_metallic">Pad 6 Metallic</option>'
+	html += '<option value="pad_7_halo">Pad 7 Halo</option>'
+	html += '<option value="pad_8_sweep">Pad 8 Sweep</option>'
+	html += '<option value="pan_flute">Pan Flute</option>'
+	html += '<option value="percussive_organ">Percussive Organ</option>'
+	html += '<option value="piccolo">Piccolo</option>'
+	html += '<option value="pizzicato_strings">Pizzicato Strings</option>'
+	html += '<option value="recorder">Recorder</option>'
+	html += '<option value="reed_organ">Reed Organ</option>'
+	html += '<option value="reverse_cymbal">Reverse Cymbal</option>'
+	html += '<option value="rock_organ">Rock Organ</option>'
+	html += '<option value="seashore">Seashore</option>'
+	html += '<option value="shakuhachi">Shakuhachi</option>'
+	html += '<option value="shamisen">Shamisen</option>'
+	html += '<option value="shanai">Shanai</option>'
+	html += '<option value="sitar">Sitar</option>'
+	html += '<option value="slap_bass_1">Slap Bass 1</option>'
+	html += '<option value="slap_bass_2">Slap Bass 2</option>'
+	html += '<option value="soprano_sax">Soprano Sax</option>'
+	html += '<option value="steel_drums">Steel Drums</option>'
+	html += '<option value="string_ensemble_1">String Ensemble 1</option>'
+	html += '<option value="string_ensemble_2">String Ensemble 2</option>'
+	html += '<option value="synth_bass_1">Synth Bass 1</option>'
+	html += '<option value="synth_bass_2">Synth Bass 2</option>'
+	html += '<option value="synth_drum">Synth Drum</option>'
+	html += '<option value="synth_voice">Synth Voice</option>'
+	html += '<option value="synthbrass_1">Synthbrass 1</option>'
+	html += '<option value="synthbrass_2">Synthbrass 2</option>'
+	html += '<option value="synthstrings_1">Synthstrings 1</option>'
+	html += '<option value="synthstrings_2">Synthstrings 2</option>'
+	html += '<option value="taiko_drum">Taiko Drum</option>'
+	html += '<option value="tango_accordion">Tango Accordion</option>'
+	html += '<option value="telephone_ring">Telephone Ring</option>'
+	html += '<option value="tenor_sax">Tenor Sax</option>'
+	html += '<option value="timpani">Timpani</option>'
+	html += '<option value="tinkle_bell">Tinkle Bell</option>'
+	html += '<option value="tremolo_strings">Tremolo Strings</option>'
+	html += '<option value="trombone">Trombone</option>'
+	html += '<option value="trumpet">Trumpet</option>'
+	html += '<option value="tuba">Tuba</option>'
+	html += '<option value="tubular_bells">Tubular Bells</option>'
+	html += '<option value="vibraphone">Vibraphone</option>'
+	html += '<option value="viola">Viola</option>'
+	html += '<option value="violin">Violin</option>'
+	html += '<option value="voice_oohs">Voice Oohs</option>'
+	html += '<option value="whistle">Whistle</option>'
+	html += '<option value="woodblock">Woodblock</option>'
+	html += '<option value="xylophone">Xylophone</option>'
+	html += '</select>'
+	html += '</div>'
+	html += '<div class="tool">'
+	html += '<select id="keyInput">'
+	html += '<option value="" disabled="disabled" selected="selected">Select a key</option>'
+	html += '<option value=0>C</option>'
+	html += '<option value=1>C#</option>'
+	html += '<option value=2>D</option>'
+	html += '<option value=3>D#</option>'
+	html += '<option value=4>E</option>'
+	html += '<option value=5>F</option>'
+	html += '<option value=6>F#</option>'
+	html += '<option value=7>G</option>'
+	html += '<option value=8>G#</option>'
+	html += '<option value=9>A</option>'
+	html += '<option value=10>A#</option>'
+	html += '<option value=11>B</option>'
+	html += '</select>'
+	html += '</div>'
+	html += '<div class="tool">'
+	html += '<input type="color" id="colorPicker">'
+	html += '</div>'
+	html += '</div>'
+	html += '<center><div class="tool">'
+	html += '<input type="text" id="titleInput" placeholder="Title">'
+	html += '</div>'
+	html += '<div class="tool">'
+	html += '<input type="text" id="authorInput" placeholder="Artist">'
+	html += '</div>'
+	html += '<div class="tool">'
+	html += '<input type="text" id="descInput" placeholder="Description">'
+	html += '</div></center>'
+	html += '<center><div class="tool">'
+	html += '<button type="button" id="saveBtn" onClick="save()">Save</button>'
+	html += '</div></center>'
+	html += '<center><div class="tool">'
+	html += '<button type="button" id="deleteBtn" onClick="back()">Back</button>'
+	html += '</div></center>';
 
 	document.getElementsByClassName("content")[0].innerHTML = html;
 
-}
+	document.getElementById("colorPicker").value = currColor;
+			// color picker event listener
+			document.getElementById("colorPicker").addEventListener("change", function() {
+				currColor = document.getElementById("colorPicker").value;
+			})
 
-function loadSong(songID) {
-	noteArray = songList[songID].matrix;
-	height = noteArray.length;
-	width = noteArray[0].length;
-	loadHTML();
-	loadMatrix();
-}
+			// tempo input event listener
+			document.getElementById("tempoInput").addEventListener("change", function() {
+			    beatsPerMin = 6000 / document.getElementById("tempoInput").value; //TODO error checking
 
-function likeButton(songID) {
+			    clearInterval(intervalVar);
+			    intervalVar = window.setInterval(highlightCol, beatsPerMin);
+			});
 
-	songList[songID].likes += 1;
-	console.log("add like to song: " + songID);
+			// instrument input event listener
+			document.getElementById("instrumentInput").addEventListener("change", function() {
+				console.log(document.getElementById("instrumentInput").value);
+				loadMIDI(document.getElementById("instrumentInput").value);
+			});
 
-}
+			// key input event listener
+			document.getElementById("keyInput").addEventListener("change", function() {
+				offset = parseInt(document.getElementById("keyInput").value);
+			});
 
-function makeGet(url, cb) {
-	var req = new XMLHttpRequest();
-	req.onreadystatechange = function() { handleRes(req, cb); }
-	req.open('GET', url);
-	req.send();
-}
+			document.getElementById("trexImg").addEventListener("mouseover", function() {
+				document.getElementById("trexImg").src = "images/trex3.png";
+			});
+			document.getElementById("trexImg").addEventListener("mouseout", function() {
+				document.getElementById("trexImg").src = "images/trex2.png";
+			});
 
-function makePost(url, params) {
-	var req = new XMLHttpRequest();
-	req.onreadystatechange = function() { console.log('POST complete'); }
-	req.open('POST', url);
-	req.send(params);
-}
+			// title input event listener
+			document.getElementById("titleInput").addEventListener("change", function() {
+				// save the matrix title
+				console.log("new title");
+			});
 
-function handleRes(req, cb) {
-	if (req.readyState !== XMLHttpRequest.DONE) {
-		return;
-	} else if (req.status === 200) {
-		if (cb) cb(JSON.parse(req.responseText));
-	}
-}
+			// author input event listener
+			document.getElementById("authorInput").addEventListener("change", function() {
+				// save the matrix author
+				console.log("new author");
+			});
 
-</script>
+			// description input event listener
+			document.getElementById("descInput").addEventListener("change", function() {
+				// save the matrix description
+				console.log("new description");
+			});
 
-</html>
+		}
+
+		function loadSong(songID) {
+			noteArray = songList[songID].matrix;
+			height = noteArray.length;
+			width = noteArray[0].length;
+			loadHTML();
+			loadMatrix();
+		}
+
+		function likeButton(songID) {
+
+			songList[songID].likes += 1;
+			console.log("add like to song: " + songID);
+
+			makePost('/update-rating', '{"name":"' + songList[songID].name + '","artist":"' + songList[songID].artist + '","likes":' + songList[songID].likes + '}');
+
+		}
+
+		function makeGet(url, cb) {
+			var req = new XMLHttpRequest();
+			req.onreadystatechange = function() { handleRes(req, cb); }
+			req.open('GET', url);
+			req.send();
+		}
+
+		function makePost(url, params) {
+			var req = new XMLHttpRequest();
+			req.onreadystatechange = function() { console.log('POST complete'); }
+			req.open('POST', url);
+			req.send(params);
+		}
+
+		function handleRes(req, cb) {
+			if (req.readyState !== XMLHttpRequest.DONE) {
+				return;
+			} else if (req.status === 200) {
+				if (cb) cb(JSON.parse(req.responseText));
+			}
+		}
+
+		</script>
+
+		</html>
