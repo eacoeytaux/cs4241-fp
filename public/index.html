@@ -471,7 +471,9 @@ function loadSongs() {
 		html += songList[song].artist + "</span></br></br><span class='songComment' id='" 
 		html += song + "' onClick='loadSong(this.id)'>";
 		html += songList[song].comment + "</span>" + "</div><div class='songButton'>";
-		html += '<button type="button" id="' + song + '" onClick="likeButton(this.id)">Like</button></div></div><hr>'
+		html += '<button type="button" id="' + song + '" onClick="likeButton(this.id)">Like</button>';
+		html += '<span class="songTitle">' + songList[song].likes + '</span>';
+		html += '<button type="button" id="' + song + '" onClick="unlikeButton(this.id)">Unlike</button></div></div><hr>';
 
 	}
 
@@ -742,7 +744,18 @@ function likeButton(songID) {
 	console.log("add like to song: " + songID);
 
 	makePost('/update-rating', '{"name":"' + songList[songID].name + '","artist":"' + songList[songID].artist + '","likes":' + songList[songID].likes + '}');
+	loadSongs();
 
+}
+
+function unlikeButton(songID) {
+	if(songList[songID].likes > 0) {
+		songList[songID].likes -= 1;
+		console.log("add like to song: " + songID);
+
+		makePost('/update-rating', '{"name":"' + songList[songID].name + '","artist":"' + songList[songID].artist + '","likes":' + songList[songID].likes + '}');
+		loadSongs();
+	}
 }
 
 function makeGet(url, cb) {
