@@ -34,43 +34,56 @@
 
 var likedSongs = [];
 
-// order goes [row][column]
-noteArray = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
-
 var height = 16;
 var width = 16;
-var currCol = 0;
-var currColor = "#C05B73";
-var beatsPerMin = 60;
-var mouseClick = false;
-var addColor = false;
-var key = 'C';
-var instrument = "honkytonk_piano";
-
-var intervalVar = window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
-
+var currCol = 0; /* The current column being played */
+var currColor = "#C05B73"; /*The color of the notes being played */
+var beatsPerMin = 50; /* Bpm of the current song */
+var mouseClick = false; /* If a mouse click over the matrix has occured */
+var addColor = false; /* If the user has selected to add a color */
+var key = 'C'; /* the key of the current song */
+var instrument = "electric_piano_1"; /* The current instrument being used */
+var songList = []; /* stores the global list of all songs currently being displayed */
 var volume = 127;
 var baseNote = 86;
 var offset = 0;
 
-// stores the global list of all songs
-var songList = []
+/* Matrix of notes in the current loaded song (noteArray[row][col]) */
+noteArray = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1],
+			[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1],
+			[1,0,0,0,1,0,1,1,1,1,0,0,1,1,0,0],
+			[1,1,1,1,1,0,0,0,0,1,0,0,1,1,0,0],
+			[1,1,1,1,1,0,1,1,1,1,0,0,1,1,0,0],
+			[1,0,1,0,1,0,1,0,0,1,0,0,1,1,0,0],
+			[1,0,0,0,1,0,1,1,1,1,0,0,1,1,0,0],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
+			[1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0],
+			[1,1,1,1,1,0,1,1,1,1,0,1,0,0,0,1],
+			[1,1,1,0,0,0,1,0,0,1,0,0,1,0,1,0],
+			[1,0,1,1,0,0,1,1,1,1,0,0,0,1,0,0],
+			[1,0,0,1,1,0,1,0,0,0,0,0,1,0,1,0],
+			[1,0,0,0,1,0,1,1,1,1,0,1,0,0,0,1]];
 
+/* Set the page to highlight each row based on the timing of the bpm */
+var intervalVar = window.setInterval(highlightCol, beatsPerMin); 
+
+/* Make the first song */
+var firstSong = {
+	height : 16,
+	width : 16,
+	name : "",
+	artist : "",
+	comment : "",
+	color : "#C05B73",
+	bpm : 50,
+	instrument : "electric_piano_1",
+	key : 'C',
+	matrix : noteArray
+}
+
+/* Used to load the MIDI with the current instrument */
 function loadMIDI(instrumentName, cb) {
 	MIDI.loadPlugin({
 		soundfontUrl: "./soundfont/",
@@ -85,34 +98,25 @@ function loadMIDI(instrumentName, cb) {
 	});
 }
 
-// Add event listeners to notes
+/* Load the html of the page when the page is loaded */
 window.onload = function() {
 
-	makeGet('/search-song?', function(data) {
-		noteArray = data.songs[0].matrix;
-		height = noteArray.length;
-		width = noteArray[0].length;
-		//beatsPerMin = data.songs[0].bpm;
-		//key = data.songs[0].key;
-		//instrument = data.songs[0].instrument;
+	loadHTML(firstSong);
+	loadMatrix();
 
-		loadHTML(data.songs[0]);
-		loadMatrix();
-	});
-
-	// mouse release event anywhere in the document disables mouse click
+	/* mouse release event anywhere in the document disables mouse click */
 	document.addEventListener("mouseup", function(evt) {
 		mouseClick = false;
 	});
 }
 
+/* Load the musical matrix of the current song */
 function loadMatrix(song) {
 
 	el = document.getElementById("matrix");
-		//el.style.width = (40 * width) + "px";
-		html = '<center>';
+	html = '<center>';
 
-		// Add the correct number of notes to the matrix
+		/* Add the correct number of notes to the matrix */
 		for(var row = 0; row < height; row++) {
 
 			html = html + '<div class="row" draggable=false>';
@@ -190,6 +194,9 @@ function loadMatrix(song) {
 
 	function highlightCol() {
 
+		var baseNote = 86;
+		var offset = 0;
+
 	// Make any active cells white again
 	var el; 
 	for(var row = 0; row < height; row++) {
@@ -242,7 +249,7 @@ function addCol() {
 // remove a column from the matrix
 function removeCol() {
 
-	if(width > 0) {
+	if(width > 1) {
 		for(var row = 0; row < height; row++) {
 			noteArray[row].splice(noteArray[row].length-1,noteArray[row].length)
 		}
@@ -268,7 +275,7 @@ function addRow() {
 // remove a row from the matrix
 function removeRow() {
 	
-	if(height > 0) {
+	if(height > 1) {
 		noteArray.splice(0,1)
 		height -= 1;
 		loadMatrix();
@@ -434,6 +441,15 @@ function loadHomeHTML() {
 	loadSongs();
 }
 
+function clearMatrix() {
+	for (var row = 0; row < height; row++) {
+		for (var col = 0; col < width; col++) {
+			noteArray[row][col] = 0;
+		}
+	}
+	loadMatrix();
+}
+
 function loadSongs() {
 	var html = '';
 
@@ -482,7 +498,7 @@ function loadSongs() {
 		html += songList[song].comment + "</span>" + "</div><div class='songButton'>";
 		html += '<center><div><img src="images/upArrow.png" width="30px" alt="Up Vote" id="' + song;
 		html += '" onClick="likeButton(this.id)"></div>';
-		html += '<div><span class="songTitle">' + songList[song].likes + '</span></div>';
+		html += '<div><span class="songLikes">' + songList[song].likes + '</span></div>';
 		html += '<div><img src="images/downArrow.png" width="30px" alt="Down Vote" id="' + song;
 		html += '" onClick="unlikeButton(this.id)"></div></center></div></div><hr>';
 
@@ -661,6 +677,9 @@ function loadHTML(song) {
 	html += '</div>'
 	html += '<div class="tool">'
 	html += '<input type="color" id="colorPicker">'
+	html += '</div>'
+	html += '<div class="tool">'
+	html += '<button type="button" id="resetButton" onclick="clearMatrix()">Clear</button>'
 	html += '</div>'
 	html += '</div>'
 	html += '<center><div class="tool">'
