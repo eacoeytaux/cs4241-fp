@@ -780,7 +780,7 @@ function loadSong(songID) {
 
 /* Increase the number of likes for the selected song */
 function likeButton(songID) {
-	//check to make sure song has not already been liked
+	/* check to make sure song has not already been liked */
 	for (var i in likedSongs) {
 		if ((likedSongs[i].name == songList[songID].name) && (likedSongs[i].artist == songList[songID].artist)) {
 			alert("You have already voted on this song");
@@ -788,7 +788,7 @@ function likeButton(songID) {
 		}
 	}
 
-	//song has not been liked/unliked
+	/* song has not been liked/unliked */
 	var likedSong = {};
 	likedSong.name = songList[songID].name;
 	likedSong.artist = songList[songID].artist;
@@ -803,7 +803,7 @@ function likeButton(songID) {
 
 /* Decrease the number of likes for the selected song */
 function unlikeButton(songID) {
-	//check to make sure song has not already been liked
+	/* check to make sure song has not already been liked */
 	for (var i in likedSongs) {
 		if ((likedSongs[i].name == songList[songID].name) && (likedSongs[i].artist == songList[songID].artist)) {
 			alert("You have already voted on this song");
@@ -811,7 +811,7 @@ function unlikeButton(songID) {
 		}
 	}
 
-	//song has not been liked/unliked
+	/* song has not been liked/unliked */
 	var likedSong = {};
 	likedSong.name = songList[songID].name;
 	likedSong.artist = songList[songID].artist;
