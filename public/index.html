@@ -768,9 +768,9 @@ function loadHTML(song) {
 		document.getElementById("instrumentInput").value = song.instrument;
 		loadMIDI(song.instrument);
 	}
-
 }
 
+/* Load a song to be played */
 function loadSong(songID) {
 	noteArray = songList[songID].matrix;
 	height = noteArray.length;
@@ -779,6 +779,7 @@ function loadSong(songID) {
 	loadMatrix();
 }
 
+/* Increase the number of likes for the selected song */
 function likeButton(songID) {
 
 	songList[songID].likes += 1;
@@ -786,9 +787,9 @@ function likeButton(songID) {
 
 	makePost('/update-rating', '{"name":"' + songList[songID].name + '","artist":"' + songList[songID].artist + '","likes":' + songList[songID].likes + '}');
 	loadSongs();
-
 }
 
+/* Decrease the number of likes for the selected song */
 function unlikeButton(songID) {
 	if(songList[songID].likes > 0) {
 		songList[songID].likes -= 1;
@@ -799,6 +800,7 @@ function unlikeButton(songID) {
 	}
 }
 
+/* Make a GET to the server */
 function makeGet(url, cb) {
 	var req = new XMLHttpRequest();
 	req.onreadystatechange = function() { handleRes(req, cb); }
@@ -806,6 +808,7 @@ function makeGet(url, cb) {
 	req.send();
 }
 
+/* make a POST to the server */
 function makePost(url, params) {
 	var req = new XMLHttpRequest();
 	req.onreadystatechange = function() { console.log('POST complete'); }
@@ -813,6 +816,7 @@ function makePost(url, params) {
 	req.send(params);
 }
 
+/* Handle the server response */
 function handleRes(req, cb) {
 	if (req.readyState !== XMLHttpRequest.DONE) {
 		return;
