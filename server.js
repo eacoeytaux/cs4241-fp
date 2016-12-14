@@ -132,6 +132,7 @@ function sendFile(res, filename, contentType) {
   })
 }
 
+/* Checks if a unique artist/title combo has been made before saving the song */
 function checkSongs(res, uri) {
   res.writeHead(200, {'Content-type': 'application/json'});
 
@@ -169,6 +170,7 @@ function checkSongs(res, uri) {
   });
 }
 
+/* Search for a song query from the list */
 function searchSongs(res, uri) {
   res.writeHead(200, {'Content-type': 'application/json'});
 
@@ -196,30 +198,12 @@ function searchSongs(res, uri) {
           }
         }
       }
-
-      // } else if (uri.pathname='sort-popular') {
-      //   filteredSongs = songsList;
-      //   filteredSongs.sort(function(a, b) {
-      //     return a.likes - b.likes;
-      //   });
-      // } else if (uri.pathname='sort-recent') {
-      //   filteredSongs = songsList;
-      //   filteredSongs.sort(function(a, b) {
-      //     if (a.date < b.date) {
-      //       return -1;
-      //     } else if (a.date > b.date) {
-      //       return 1;
-      //     } else {
-      //       return 0;
-      //     }
-      //   });
-      // }
-
       res.end('{"songs":' + JSON.stringify(filteredSongs) + '}');
     } 
   });
 }
 
+/* Update the rating of a certain song */
 function updateSongRating(updateInfo) {
   fs.readFile(songFilePath, function(err, data) {
     if (err) throw err;
@@ -242,13 +226,12 @@ function updateSongRating(updateInfo) {
   });
 }
 
+/* Save a song recieved from the client */
 function saveSong(song) {
   fs.readFile(songFilePath, function(err, data) {
     if (err) throw err;
 
     var songs = JSON.parse(data);
-
-    //TODO error checking?
 
     song.date = dateTime();
     song.likes = 0;
@@ -264,6 +247,7 @@ function saveSong(song) {
   });
 }
 
+/* List of all the different working instruments */
 var instruments = [
   "/soundfont/accordion-ogg.js",
   "/soundfont/acoustic_bass-ogg.js",
