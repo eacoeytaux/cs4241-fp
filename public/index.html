@@ -62,6 +62,7 @@ var instrument = "honkytonk_piano";
 
 var intervalVar = window.setInterval(highlightCol, beatsPerMin); // repeat forever, polling every 100 ms
 
+var volume = 127;
 var baseNote = 86;
 var offset = 0;
 
@@ -212,7 +213,7 @@ function loadMatrix(song) {
 			el = document.getElementById(row+ ':' + currCol)
 			el.style.backgroundColor = currColor;
 
-			MIDI.noteOn(0, getNoteVal(row, baseNote + offset), 127, 0);
+			MIDI.noteOn(0, getNoteVal(row, baseNote + offset), volume, 0);
 		}
 	}
 }
@@ -720,6 +721,10 @@ function loadHTML(song) {
 	document.getElementById("descInput").addEventListener("change", function() {
 		// save the matrix description
 		console.log("new description");
+	});
+
+	document.getElementById("volumeInput").addEventListener("change", function() {
+		volume = document.getElementById("volumeInput").value;
 	});
 
 	if (song) {
