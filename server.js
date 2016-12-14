@@ -59,6 +59,12 @@ var server = http.createServer (function (req, res) {
       case '/images/trex3.png':
         sendFile(res, 'public/images/trex3.png');
         break;
+      case '/images/upArrow.png':
+        sendFile(res, 'public/images/upArrow.png');
+        break;
+      case '/images/downArrow.png':
+        sendFile(res, 'public/images/downArrow.png');
+        break;
       case 'README.md':
       case '/README':
         sendFile(res, 'README.md');
