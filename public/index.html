@@ -32,7 +32,8 @@
 
 <script>
 
-/* Global variables about the current loaded song */
+var likedSongs = [];
+
 var height = 16;
 var width = 16;
 var currCol = 0; /* The current column being played */
@@ -295,27 +296,31 @@ function save() {
 
 	/* Make sure that the song has an artist and title */
 	if((document.getElementById("titleInput").value == "") || (document.getElementById("authorInput").value) == "") {
-		alert("You must add a song title and artist name to save.")
+		alert("You must add a song title and artist name to save.");
 	}
-	else {
 
-		song.name = document.getElementById("titleInput").value;
-		song.artist = document.getElementById("authorInput").value;
-		song.matrix = noteArray;
-		song.height = noteArray.length;
-		song.width = noteArray[0].length;
-		song.comment = document.getElementById("descInput").value;
-		song.color = document.getElementById("colorPicker").value;
-		song.key = document.getElementById("keyInput").value;
-		song.bpm = document.getElementById("tempoInput").value;
-		song.instrument = document.getElementById("instrumentInput").value;
+	makeGet('/check-song?' + document.getElementById("titleInput").value + ':' + document.getElementById("authorInput").value, function(data) {
+			if (data == true) {
+				song.name = document.getElementById("titleInput").value;
+				song.artist = document.getElementById("authorInput").value;
+				song.matrix = noteArray;
+				song.height = noteArray.length;
+				song.width = noteArray[0].length;
+				song.comment = document.getElementById("descInput").value;
+				song.color = document.getElementById("colorPicker").value;
+				song.key = document.getElementById("keyInput").value;
+				song.bpm = document.getElementById("tempoInput").value;
+				song.instrument = document.getElementById("instrumentInput").value;
 
-		console.log("song data", song);
-		makePost('add-song', JSON.stringify(song));
-		
-		loadHome(); /* load up the html for the home page */
-
-	}
+				console.log("song data", song);
+				makePost('add-song', JSON.stringify(song));
+				
+				alert("Song saved!");
+				loadHome();
+			} else {
+				alert("The title/artist combination you have chosen is not unique.\nPlease change either your song or artist name.");
+			}
+		});
 }
 
 /* Handles returning to the home page without saving */
@@ -445,6 +450,15 @@ function loadHomeHTML() {
 	document.getElementById("sortType").addEventListener("change", sortSongs);
 
 	loadSongs();
+}
+
+function clearMatrix() {
+	for (var row = 0; row < height; row++) {
+		for (var col = 0; col < width; col++) {
+			noteArray[row][col] = 0;
+		}
+	}
+	loadMatrix();
 }
 
 /* Handles displaying the html for the list of songs */
@@ -676,6 +690,9 @@ function loadHTML(song) {
 	html += '<div class="tool">'
 	html += '<input type="color" id="colorPicker">'
 	html += '</div>'
+	html += '<div class="tool">'
+	html += '<button type="button" id="resetButton" onclick="clearMatrix()">Clear</button>'
+	html += '</div>'
 	html += '</div>'
 	html += '<center><div class="tool">'
 	html += '<input type="text" id="titleInput" placeholder="Title" maxlength="40">'
@@ -729,24 +746,6 @@ function loadHTML(song) {
 		document.getElementById("trexImg").src = "images/trex2.png";
 	});
 
-	/* title input event listener */
-	document.getElementById("titleInput").addEventListener("change", function() {
-		// save the matrix title
-		console.log("new title");
-	});
-
-	// author input event listener
-	document.getElementById("authorInput").addEventListener("change", function() {
-		// save the matrix author
-		console.log("new author");
-	});
-
-	// description input event listener
-	document.getElementById("descInput").addEventListener("change", function() {
-		// save the matrix description
-		console.log("new description");
-	});
-
 	document.getElementById("volumeInput").addEventListener("change", function() {
 		volume = document.getElementById("volumeInput").value;
 	});
@@ -781,6 +780,19 @@ function loadSong(songID) {
 
 /* Increase the number of likes for the selected song */
 function likeButton(songID) {
+	//check to make sure song has not already been liked
+	for (var i in likedSongs) {
+		if ((likedSongs[i].name == songList[songID].name) && (likedSongs[i].artist == songList[songID].artist)) {
+			alert("You have already voted on this song");
+			return;
+		}
+	}
+
+	//song has not been liked/unliked
+	var likedSong = {};
+	likedSong.name = songList[songID].name;
+	likedSong.artist = songList[songID].artist;
+	likedSongs.push(likedSong);
 
 	songList[songID].likes += 1;
 	console.log("add like to song: " + songID);
@@ -791,6 +803,20 @@ function likeButton(songID) {
 
 /* Decrease the number of likes for the selected song */
 function unlikeButton(songID) {
+	//check to make sure song has not already been liked
+	for (var i in likedSongs) {
+		if ((likedSongs[i].name == songList[songID].name) && (likedSongs[i].artist == songList[songID].artist)) {
+			alert("You have already voted on this song");
+			return;
+		}
+	}
+
+	//song has not been liked/unliked
+	var likedSong = {};
+	likedSong.name = songList[songID].name;
+	likedSong.artist = songList[songID].artist;
+	likedSongs.push(likedSong);
+
 	if(songList[songID].likes > 0) {
 		songList[songID].likes -= 1;
 		console.log("add like to song: " + songID);
