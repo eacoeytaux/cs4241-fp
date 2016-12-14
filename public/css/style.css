@@ -118,6 +118,21 @@ h3 {
   background-color: black;
 }
 
+.tool textarea {
+  padding: 10px;
+  border: none;
+  border-bottom: solid 2px #c9c9c9;
+
+  font-family: 'Ubuntu Condensed', sans-serif;
+  transition: border 0.3s;
+  background-color: black;
+  color: white;
+}
+.tool textarea:focus,
+.tool textarea.focus {
+  border-bottom: solid 2px #969696;
+}
+
 .tool input[type="text"] {
   padding: 10px;
   border: none;
@@ -162,6 +177,24 @@ select {
   padding-bottom: 10px;
   margin-left: 150px;
   margin-right: 150px;
+}
+
+#titleInput {
+  width: 320px;
+  text-align: center;
+  font-size: 32px;
+}
+
+#authorInput {
+  width: 320px;
+  text-align: center;
+  font-size: 24px;
+}
+
+#descInput {
+  width: 320px;
+  text-align: center;
+  font-size: 16px;
 }
 
 .songTitle {
@@ -238,7 +271,7 @@ hr {
         background-color: #FFF;
         height: 8px;
         vertical-align: middle;
-        
+
     }
     input[type=range]::-webkit-slider-runnable-track {
         -webkit-appearance: none;
