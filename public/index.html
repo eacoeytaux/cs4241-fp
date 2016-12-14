@@ -43,6 +43,9 @@ var addColor = false; /* If the user has selected to add a color */
 var key = 'C'; /* the key of the current song */
 var instrument = "electric_piano_1"; /* The current instrument being used */
 var songList = []; /* stores the global list of all songs currently being displayed */
+var volume = 127;
+var baseNote = 86;
+var offset = 0;
 
 /* Matrix of notes in the current loaded song (noteArray[row][col]) */
 noteArray = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -218,7 +221,7 @@ function loadMatrix(song) {
 			el = document.getElementById(row+ ':' + currCol)
 			el.style.backgroundColor = currColor;
 
-			MIDI.noteOn(0, getNoteVal(row, baseNote + offset), 127, 0);
+			MIDI.noteOn(0, getNoteVal(row, baseNote + offset), volume, 0);
 		}
 	}
 }
@@ -728,6 +731,10 @@ function loadHTML(song) {
 	document.getElementById("descInput").addEventListener("change", function() {
 		// save the matrix description
 		console.log("new description");
+	});
+
+	document.getElementById("volumeInput").addEventListener("change", function() {
+		volume = document.getElementById("volumeInput").value;
 	});
 
 	if (song) {
