@@ -44,7 +44,7 @@ var addColor = false; /* If the user has selected to add a color */
 var key = 'C'; /* the key of the current song */
 var instrument = "electric_piano_1"; /* The current instrument being used */
 var songList = []; /* stores the global list of all songs currently being displayed */
-var volume = 127;
+var volume = 127; /* Volume of the current song */
 var baseNote = 86;
 var offset = 0;
 
@@ -116,88 +116,89 @@ function loadMatrix(song) {
 	el = document.getElementById("matrix");
 	html = '<center>';
 
-		/* Add the correct number of notes to the matrix */
-		for(var row = 0; row < height; row++) {
+	/* Add the correct number of notes to the matrix */
+	for(var row = 0; row < height; row++) {
 
-			html = html + '<div class="row" draggable=false>';
-			for(var col = 0; col < width; col++) {
-				html = html + '<div id="' + row + ':' + col +'" class="notes row:' + row + ' col:' + col + '" draggable=false></div>';
-			}
-			html = html + '</div>';
+		html = html + '<div class="row" draggable=false>';
+		for(var col = 0; col < width; col++) {
+			html = html + '<div id="' + row + ':' + col +'" class="notes row:' + row + ' col:' + col + '" draggable=false></div>';
 		}
-		el.innerHTML = html + '</center>';
-		
-		
-		for(var row = 0; row < height; row++) {
-			for(var col = 0; col < width; col++) {
-				if(noteArray[row][col] == 1) {
-					document.getElementById(row+ ':' + col).style.backgroundColor = '#F0F0F0';
-				}
-				else {
-					document.getElementById(row+ ':' + col).style.backgroundColor = '#494949';
-				}
+		html = html + '</div>';
+	}
+	el.innerHTML = html + '</center>';
+	
+	/* Update the color of the matrex to show the selected notes */
+	for(var row = 0; row < height; row++) {
+		for(var col = 0; col < width; col++) {
+			if(noteArray[row][col] == 1) {
+				document.getElementById(row+ ':' + col).style.backgroundColor = '#F0F0F0';
+			}
+			else {
+				document.getElementById(row+ ':' + col).style.backgroundColor = '#494949';
 			}
 		}
-		
-		
-		var notes = document.getElementsByClassName("notes");
-		for (var i = 0; i < notes.length; i++) {
-			notes[i].addEventListener("mousedown", function(evt) {
+	}
+	
+	/* Add the mouse down event listener */
+	var notes = document.getElementsByClassName("notes");
+	for (var i = 0; i < notes.length; i++) {
+		notes[i].addEventListener("mousedown", function(evt) {
 
-				// set the mouse click boolean to true
-				mouseClick = true;
-				// determine the row and column of the clicked noteArray
+			mouseClick = true; /* Indicate that a mouse click has been detected */
+
+			/* determine the row and column of the clicked noteArray */
+			var temp = evt.target.className.split(':')
+			var row = temp[1].split(' ')[0];
+			var col = temp[2];
+			if(noteArray[row][col] == 0) {
+				evt.target.style.backgroundColor = '#F0F0F0';
+				noteArray[row][col] = 1;
+				addColor = true;
+			}
+			else {
+				evt.target.style.backgroundColor = '#494949';
+				noteArray[row][col] = 0;
+				addColor = false;
+			}
+		});
+	}
+	
+	/* add the mouse over event listeners for the music matrix */
+	for (var i = 0; i < notes.length; i++) {
+		notes[i].addEventListener("mouseover", function(evt) {
+
+			/* change the note color if a mouse click has already occured */
+			if(mouseClick) {
+
+				/* determine the row and column of the clicked noteArray */
 				var temp = evt.target.className.split(':')
 				var row = temp[1].split(' ')[0];
 				var col = temp[2];
-				if(noteArray[row][col] == 0) {
+				if(addColor) {
 					evt.target.style.backgroundColor = '#F0F0F0';
 					noteArray[row][col] = 1;
-					addColor = true;
 				}
 				else {
 					evt.target.style.backgroundColor = '#494949';
 					noteArray[row][col] = 0;
-					addColor = false;
 				}
-			});
-		}
-		
-		
-		// handle mouse drag events
-		for (var i = 0; i < notes.length; i++) {
-			notes[i].addEventListener("mouseover", function(evt) {
-
-				// change the note color if a mouse click has already occured
-				if(mouseClick) {
-
-					// determine the row and column of the clicked noteArray
-					var temp = evt.target.className.split(':')
-					var row = temp[1].split(' ')[0];
-					var col = temp[2];
-					if(addColor) {
-						evt.target.style.backgroundColor = '#F0F0F0';
-						noteArray[row][col] = 1;
-					}
-					else {
-						evt.target.style.backgroundColor = '#494949';
-						noteArray[row][col] = 0;
-					}
-				}
-			});
-		}
-
-		clearInterval(intervalVar);
-		intervalVar = window.setInterval(highlightCol, beatsPerMin);
+			}
+		});
 	}
 
+	/* Update the rate of the notes being played based on the bpm */
+	clearInterval(intervalVar);
+	intervalVar = window.setInterval(highlightCol, beatsPerMin);
 
-	function highlightCol() {
+}
 
-		var baseNote = 86;
-		var offset = 0;
+/* Function used to control the highlighting of different columns */
+function highlightCol() {
 
-	// Make any active cells white again
+	var baseNote = 86;
+	var offset = 0;
+
+	/* Make any active cells white again */
 	var el; 
 	for(var row = 0; row < height; row++) {
 		if(noteArray[row][currCol]) {
@@ -208,7 +209,7 @@ function loadMatrix(song) {
 		}
 	}
 
-	// increment the currCol variable
+	/* increment the currCol variable */
 	if(currCol < (width-1)) {
 		currCol += 1;
 	}
@@ -216,7 +217,7 @@ function loadMatrix(song) {
 		currCol = 0;
 	}
 
-	// determine which notes are active
+	/* determine which notes are active */
 	for(var row = 0; row < height; row++) {
 		if(noteArray[row][currCol]) {
 			el = document.getElementById(row+ ':' + currCol)
@@ -227,6 +228,7 @@ function loadMatrix(song) {
 	}
 }
 
+/* Function to get the note value to be played */
 var pentatonicScale = [10, 8, 5, 3, 0];
 function getNoteVal(col, offset) {
 	var octave = Math.floor(col / 5) + 2;
@@ -234,9 +236,10 @@ function getNoteVal(col, offset) {
 	return noteVal;
 }
 
-// add a column to the matrix
+/* Function to add a column to the matrix */
 function addCol() {
 
+	/* 16 is the max size */
 	if(width < 16) {
 		for(var row = 0; row < height; row++) {
 			noteArray[row].push(0)
@@ -246,9 +249,10 @@ function addCol() {
 	}
 }
 
-// remove a column from the matrix
+/* Function to remove a column from the matrix */
 function removeCol() {
 
+	/* There must be at least one column */
 	if(width > 1) {
 		for(var row = 0; row < height; row++) {
 			noteArray[row].splice(noteArray[row].length-1,noteArray[row].length)
@@ -258,9 +262,10 @@ function removeCol() {
 	}
 }
 
-// add a row to the matrix
+/* Function to add a row to the matrix */
 function addRow() {
 
+	/* 16 rows maximum */
 	if(height < 16) {
 		var newRow = []
 		for(var col = 0; col < width; col++) {
@@ -272,9 +277,10 @@ function addRow() {
 	}
 }
 
-// remove a row from the matrix
+/* Function to remove a row from the matrix */
 function removeRow() {
 	
+	/* There must be at least one row */
 	if(height > 1) {
 		noteArray.splice(0,1)
 		height -= 1;
@@ -282,8 +288,7 @@ function removeRow() {
 	}
 }
 
-
-// function to handle saving of the current matrix
+/* Function to handle saving of the current matrix */
 function save() {
 	console.log("save");
 
@@ -318,6 +323,7 @@ function save() {
 		});
 }
 
+/* Handles returning to the home page without saving */
 function back() {
 	if (confirm("Just a head's up, you will lose any unsaved progress!") == true) {
 		loadHome();
@@ -325,9 +331,10 @@ function back() {
 	} 
 }
 
+/* Show all of the songs from a search for a specific artist */
 function searchArtist(songID) {
 
-	// get the name of the artist
+	/* get the name of the artist */
 	var artistName = '/search-artist?' + songList[songID].artist;
 	console.log(artistName);
 
@@ -341,11 +348,12 @@ function searchArtist(songID) {
 	});
 }
 
+/* Refresh the home page list */
 function refresh() {
 	loadHome();
 }
 
-// loads the home page
+/* Function to loads the home page */
 function loadHome() {
 
 	clearInterval(intervalVar);
@@ -357,42 +365,44 @@ function loadHome() {
 	});
 }
 
+/* Function to sort the songs displayed on the home page */
 function sortSongs() {
 	songList = songList.sort(function(a, b) {
 		switch (document.getElementById("sortType").value) {
 			case 'recent':
-			if (a.date < b.date) {
-				return -1;
-			} else if (a.date > b.date) {
-				return 1;
-			} else {
-				return 0;
-			}
-			break;
+				if (a.date < b.date) {
+					return -1;
+				} else if (a.date > b.date) {
+					return 1;
+				} else {
+					return 0;
+				}
+				break;
 			case 'popular':
-			if (a.likes < b.likes) {
-				return 1;
-			} else if (a.likes > b.likes) {
-				return -1;
-			} else {
-				return 0;
-			}
+				if (a.likes < b.likes) {
+					return 1;
+				} else if (a.likes > b.likes) {
+					return -1;
+				} else {
+					return 0;
+				}
 			break;
 			case 'alphabetical':
-			if (a.name < b.name) {
-				return -1;
-			} else if (a.name > b.name) {
-				return 1;
-			} else {
-				return 0;
-			}
-			break;
+				if (a.name < b.name) {
+					return -1;
+				} else if (a.name > b.name) {
+					return 1;
+				} else {
+					return 0;
+				}
+				break;
 		}
 	});
 
-	loadSongs();
+	loadSongs(); /* load the sorted songs */
 }
 
+/* Search for songs based on the title or artist name */
 function search() {
 
 	var cb = function(data) {
@@ -412,6 +422,7 @@ function search() {
 	}
 }
 
+/* Function to handle loading the html of the home page */
 function loadHomeHTML() {
 
 	/* html string to store new html to load */
@@ -450,6 +461,7 @@ function clearMatrix() {
 	loadMatrix();
 }
 
+/* Handles displaying the html for the list of songs */
 function loadSongs() {
 	var html = '';
 
@@ -463,7 +475,7 @@ function loadSongs() {
 		}
 		html += "<div class='song' ><div class='songMatrix' id='" + song + "' onClick='loadSong(this.id)'>";
 
-    	// only show 8x8 of the matrix if it is larger than 8x8
+    	/* only show 8x8 of the matrix if it is larger than 8x8 */
     	var tempHeight = songList[song].height;
     	var tempWidth = songList[song].width
     	if(tempHeight > 8) {
@@ -473,12 +485,12 @@ function loadSongs() {
     		tempWidth = 8;
     	}
 
-    	// Add the correct number of notes to the matrix
+    	/* Add the correct number of notes to the matrix */
     	for(var row = 0; row < tempHeight; row++) {
 
     		html += '<div class="smallRow">';
     		for(var col = 0; col < tempWidth; col++) {
-				// determine if that square is highlighted of not
+				/* determine if that square is highlighted of not */
 				if(songList[song].matrix[row][col]) {
 					colorString = '#F0F0F0';
 				}
@@ -507,7 +519,7 @@ function loadSongs() {
 	document.getElementById("songList").innerHTML = html;
 }
 
-
+/* Display the html for editing a song */
 function loadHTML(song) {
 
 	var html = '<div id="buffer" class="side-panel"></div>';
@@ -698,15 +710,16 @@ function loadHTML(song) {
 	html += '<button type="button" id="deleteBtn" onClick="back()">Back</button>'
 	html += '</div></center>';
 
+	/* Set the html as the inner html of the home page */
 	document.getElementsByClassName("content")[0].innerHTML = html;
 
+	/* color picker event listener */
 	document.getElementById("colorPicker").value = currColor;
-	// color picker event listener
 	document.getElementById("colorPicker").addEventListener("change", function() {
 		currColor = document.getElementById("colorPicker").value;
 	})
 
-	// tempo input event listener
+	/* tempo input event listener */
 	document.getElementById("tempoInput").addEventListener("change", function() {
 	    beatsPerMin = 6000 / document.getElementById("tempoInput").value; //TODO error checking
 
@@ -714,17 +727,18 @@ function loadHTML(song) {
 	    intervalVar = window.setInterval(highlightCol, beatsPerMin);
 	});
 
-	// instrument input event listener
+	/* instrument input event listener */
 	document.getElementById("instrumentInput").addEventListener("change", function() {
 		console.log(document.getElementById("instrumentInput").value);
 		loadMIDI(document.getElementById("instrumentInput").value);
 	});
 
-	// key input event listener
+	/* key input event listener */
 	document.getElementById("keyInput").addEventListener("change", function() {
 		offset = parseInt(document.getElementById("keyInput").value);
 	});
 
+	/* Trex picture event listener */
 	document.getElementById("trexImg").addEventListener("mouseover", function() {
 		document.getElementById("trexImg").src = "images/trex3.png";
 	});

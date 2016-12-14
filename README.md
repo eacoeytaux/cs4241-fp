@@ -39,10 +39,8 @@ Music Matrix Page Features:
 TO DO:
 
 Check all instruments work - Ethan
-Write a function to check that a song has to have an original artist/title combo to be saved
 make examples matrixes - Ethan
 comment code - Breanne
-initial matrex loaded
 unable to like multiple times
 
 
