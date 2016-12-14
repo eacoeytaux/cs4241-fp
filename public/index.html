@@ -282,27 +282,31 @@ function save() {
 
 	/* Make sure that the song has an artist and title */
 	if((document.getElementById("titleInput").value == "") || (document.getElementById("authorInput").value) == "") {
-		alert("You must add a song title and artist name to save.")
+		alert("You must add a song title and artist name to save.");
 	}
-	else {
 
-		song.name = document.getElementById("titleInput").value;
-		song.artist = document.getElementById("authorInput").value;
-		song.matrix = noteArray;
-		song.height = noteArray.length;
-		song.width = noteArray[0].length;
-		song.comment = document.getElementById("descInput").value;
-		song.color = document.getElementById("colorPicker").value;
-		song.key = document.getElementById("keyInput").value;
-		song.bpm = document.getElementById("tempoInput").value;
-		song.instrument = document.getElementById("instrumentInput").value;
+	makeGet('/check-song?' + document.getElementById("titleInput").value + ':' + document.getElementById("authorInput").value, function(data) {
+			if (data == true) {
+				song.name = document.getElementById("titleInput").value;
+				song.artist = document.getElementById("authorInput").value;
+				song.matrix = noteArray;
+				song.height = noteArray.length;
+				song.width = noteArray[0].length;
+				song.comment = document.getElementById("descInput").value;
+				song.color = document.getElementById("colorPicker").value;
+				song.key = document.getElementById("keyInput").value;
+				song.bpm = document.getElementById("tempoInput").value;
+				song.instrument = document.getElementById("instrumentInput").value;
 
-		console.log("song data", song);
-		makePost('add-song', JSON.stringify(song));
-		
-		loadHome();
-
-	}
+				console.log("song data", song);
+				makePost('add-song', JSON.stringify(song));
+				
+				alert("Song saved!");
+				loadHome();
+			} else {
+				alert("The title/artist combination you have chosen is not unique.\nPlease change either your song or artist name.");
+			}
+		});
 }
 
 function back() {
@@ -705,24 +709,6 @@ function loadHTML(song) {
 	});
 	document.getElementById("trexImg").addEventListener("mouseout", function() {
 		document.getElementById("trexImg").src = "images/trex2.png";
-	});
-
-	// title input event listener
-	document.getElementById("titleInput").addEventListener("change", function() {
-		// save the matrix title
-		console.log("new title");
-	});
-
-	// author input event listener
-	document.getElementById("authorInput").addEventListener("change", function() {
-		// save the matrix author
-		console.log("new author");
-	});
-
-	// description input event listener
-	document.getElementById("descInput").addEventListener("change", function() {
-		// save the matrix description
-		console.log("new description");
 	});
 
 	document.getElementById("volumeInput").addEventListener("change", function() {

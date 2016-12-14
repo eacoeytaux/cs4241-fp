@@ -140,18 +140,31 @@ function checkSongs(res, uri) {
 
     var titleArtist = uri.query.split(":");
 
+    console.log(titleArtist);
+
+    while (titleArtist[0].indexOf('%20') > -1) {
+      titleArtist[0] = titleArtist[0].replace('%20', ' ');
+    }
+
+    while (titleArtist[1].indexOf('%20') > -1) {
+      titleArtist[1] = titleArtist[1].replace('%20', ' ');
+    }
+
+    console.log(titleArtist[0].toLowerCase());
+    console.log(titleArtist[1].toLowerCase());
+
     var songs = JSON.parse(data);
     if (songs['songs']) {
       songsList = songs['songs'];
 
       for (var song in songsList) {
         if ((songsList[song].name.toLowerCase() == titleArtist[0].toLowerCase()) && (songsList[song].artist.toLowerCase() == titleArtist[1].toLowerCase())) {
-          res.end(false);
+          res.end("false");
         }
       }
-      res.end(true);
+      res.end("true");
     } else {
-      res.end(true);
+      res.end("true");
     }
   });
 }
@@ -159,7 +172,9 @@ function checkSongs(res, uri) {
 function searchSongs(res, uri) {
   res.writeHead(200, {'Content-type': 'application/json'});
 
-  uri.query = uri.query.replace('%20', ' ');
+  while (uri.query.indexOf('%20') > -1) {
+    uri.query = uri.query.replace('%20', ' ');
+  }
 
   fs.readFile(songFilePath, function(err, data) {
     if (err) throw err;
