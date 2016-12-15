@@ -34,14 +34,9 @@ Music Matrix Page Features:
 10.) Add a Title, Artist name and description to the song
 11.) Choose to save your song so that others can hear it (saving will bring you to the home page)
 12.) Choose to go back to the home page without saving your song
+13.) Select the clear button to clear everything from the matrix */
 
 
-TO DO:
-
-Check all instruments work - Ethan
-make examples matrixes - Ethan
-comment code - Breanne
-unable to like multiple times
 
 
 
