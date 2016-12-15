@@ -782,7 +782,7 @@ function likeButton(songID) {
 	//check to make sure song has not already been liked
 	for (var i in likedSongs) {
 		if ((likedSongs[i].name == songList[songID].name) && (likedSongs[i].artist == songList[songID].artist)) {
-			alert("You have already voted on this song");
+			alert("You have already voted on this song.");
 			return;
 		}
 	}
